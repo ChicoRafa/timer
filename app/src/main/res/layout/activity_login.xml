@@ -121,6 +121,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/simplifica"
         android:text="@string/strAccountOFF"
+        android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

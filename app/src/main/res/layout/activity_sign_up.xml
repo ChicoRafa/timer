@@ -148,6 +148,7 @@
       android:layout_height="wrap_content"
       android:fontFamily="@font/simplifica"
       android:text="@string/strAccountOn"
+      android:textColor="#DADADA"
       android:textSize="20sp"
       android:textStyle="bold"
       app:layout_constraintBottom_toBottomOf="parent"

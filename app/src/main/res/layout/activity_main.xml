@@ -7,6 +7,8 @@
     android:background="#000000"
     tools:context=".activities.MainActivity">
 
+
+
     <TextView
         android:id="@+id/tvTimer"
         android:layout_width="wrap_content"
