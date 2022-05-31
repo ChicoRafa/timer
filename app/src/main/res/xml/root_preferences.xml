@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        app:title="@string/strTimeCategory">
+
+        <com.google.android.material.slider.Slider
+            android:summary="@string/strWorkTime"
+            android:valueFrom="10.0"
+            android:valueTo="55.0"
+            android:stepSize="10.0"
+            app:trackColorActive="#ff4500"
+            app:trackColorInactive="#fbb999"
+            />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

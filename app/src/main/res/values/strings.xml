@@ -2,5 +2,26 @@
     <string name="app_name">TimerStatePrototype</string>
     <string name="timer_value">00:00</string>
     <string name="strSession">0</string>
-    <string name="strState">Estado</string>
+    <string name="strState">Pulsa para iniciar un ciclo</string>
+    <string name="descansando">DESCANSANDO</string>
+    <string name="trabajando">TRABAJANDO</string>
+    <string name="durmiendo">DURMIENDO</string>
+    <string name="nuevociclo">NUEVO CICLO</string>
+    <string name="strAjustes">Ajustes</string>
+    <string name="strLogin">Login</string>
+    <string name="strEtiquetas">Etiquetas</string>
+    <string name="strEstadistica">Estadísticas</string>
+    <string name="username">Usuario</string>
+    <string name="password">Contraseña</string>
+    <string name="strPassword">Password</string>
+    <string name="strSingUp">Registrarse</string>
+    <string name="email">Email</string>
+    <string name="strAccountOn">¿TIENE YA UNA CUENTA?</string>
+    <string name="strAccountOFF">¿NO TIENE CUENTA AÚN?</string>
+    <string name="strAllFields">Debe rellenar todos los campos</string>
+    <string name="submit">Aceptar</string>
+    <string name="strTimeCategory">Duración de los pomodoros</string>
+    <string name="strWorkTime">Duración de la sesíón de trabajo</string>
+    <string name="strBreakTime">Duración del descanso</string>
+    <string name="strSleepTime">Duración del descanso largo</string>
 </resources>
