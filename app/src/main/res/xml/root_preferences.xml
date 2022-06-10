@@ -5,15 +5,41 @@
     <PreferenceCategory
         app:title="@string/strTimeCategory">
 
-        <com.google.android.material.slider.Slider
+        <SeekBarPreference
+            android:id="@+id/sbWork"
+            android:defaultValue="@integer/work_bar_default"
+            android:key="work_bar_key"
+            android:max="@integer/work_bar_max"
+            android:min="@integer/work_bar_min"
+            android:stepSize="1"
             android:summary="@string/strWorkTime"
-            android:valueFrom="10.0"
-            android:valueTo="55.0"
-            android:stepSize="10.0"
-            app:trackColorActive="#ff4500"
-            app:trackColorInactive="#fbb999"
-            />
+            app:trackColorActive="@color/kairos_red"
+            app:trackColorInactive="@color/white" />
+
+        <SeekBarPreference
+            android:id="@+id/sbBreak"
+            android:defaultValue="@integer/break_bar_default"
+            android:key="break_bar_key"
+            android:max="@integer/break_bar_max"
+            android:min="@integer/break_bar_min"
+            android:stepSize="1"
+            android:summary="@string/strBreakTime"
+            app:trackColorActive="@color/kairos_red"
+            app:trackColorInactive="@color/white" />
+
+        <SeekBarPreference
+            android:id="@+id/sbSleep"
+            android:defaultValue="@integer/sleep_bar_default"
+            android:key="sleep_bar_key"
+            android:max="@integer/sleep_bar_max"
+            android:min="@integer/sleep_bar_min"
+            android:stepSize="1"
+            android:summary="@string/strSleepTime"
+            app:trackColorActive="@color/kairos_red"
+            app:trackColorInactive="@color/white" />
+
 
     </PreferenceCategory>
+
 
 </PreferenceScreen>

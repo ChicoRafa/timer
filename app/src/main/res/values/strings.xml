@@ -24,4 +24,7 @@
     <string name="strWorkTime">Duración de la sesíón de trabajo</string>
     <string name="strBreakTime">Duración del descanso</string>
     <string name="strSleepTime">Duración del descanso largo</string>
+    <string name="strRestartSessions">Para reiniciar el contador primero pause la sesión</string>
+    <string name="strTagTitle">"Nombre: "</string>
+    <string name="strTagColor">"Color: "</string>
 </resources>

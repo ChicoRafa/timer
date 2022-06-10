@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="work_bar_default">25</integer>
+    <integer name="work_bar_max">60</integer>
+    <integer name="work_bar_min">10</integer>
+    <integer name="break_bar_default">5</integer>
+    <integer name="break_bar_max">60</integer>
+    <integer name="break_bar_min">5</integer>
+    <integer name="sleep_bar_default">15</integer>
+    <integer name="sleep_bar_max">60</integer>
+    <integer name="sleep_bar_min">10</integer>
+
+</resources>

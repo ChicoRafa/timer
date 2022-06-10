@@ -35,6 +35,20 @@ public class PreferenceFragment extends BottomSheetDialogFragment {
                 dismiss();
             }
         });
+        opEstadistica.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onBottomSheetClicked(2);
+                dismiss();
+            }
+        });
+        opEtiqueta.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onBottomSheetClicked(3);
+                dismiss();
+            }
+        });
         opLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
