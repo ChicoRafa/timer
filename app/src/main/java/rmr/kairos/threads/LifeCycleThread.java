@@ -1,5 +1,9 @@
 package rmr.kairos.threads;
 
+import android.content.SharedPreferences;
+
+import androidx.preference.PreferenceManager;
+
 import rmr.kairos.R;
 import rmr.kairos.activities.MainActivity;
 import rmr.kairos.interfaces.LayoutUpdatable;
@@ -20,14 +24,16 @@ public class LifeCycleThread implements Runnable {
     private int lifeCycleSession;
     private int lifeCycleState;
     private MainActivity mainActivity;
+    private SharedPreferences kp;
 
     public LifeCycleThread(int session, int state, LayoutUpdatable layoutUpdatable) {
         this.mainActivity = (MainActivity) layoutUpdatable;
+        this.kp = PreferenceManager.getDefaultSharedPreferences(this.mainActivity);
         this.lifeCycleSession = session;
         this.lifeCycleState = state;
         this.updateStateText(this.mainActivity.getResources().getString(R.string.trabajando));
         this.timeLeftMilis = new KairosLong(0);
-        this.ctTimer = new CounterThreadTimer(this);
+        this.ctTimer = new CounterThreadTimer(kp,this);
     }
     @Override
     public void run() {
@@ -62,13 +68,13 @@ public class LifeCycleThread implements Runnable {
     public void startTimer() {
         switch (this.lifeCycleState) {
             case LifeCycleThread.WORKING:
-                this.timeLeftMilis.setValue(CounterThreadTimer.START_TIME_MILIS);
+                this.timeLeftMilis.setValue(ctTimer.getStartTimeMillis());
                 break;
             case LifeCycleThread.BREAKING:
-                this.timeLeftMilis.setValue(CounterThreadTimer.BREAK_TIME_MILIS);
+                this.timeLeftMilis.setValue(ctTimer.getBreakTimeMilis());
                 break;
             case LifeCycleThread.SLEEPING:
-                this.timeLeftMilis.setValue(CounterThreadTimer.LONG_BREAK_TIME_MILIS);
+                this.timeLeftMilis.setValue(ctTimer.getLongBreakTimeMilis());
                 break;
             case LifeCycleThread.CYCLING:
                 this.timeLeftMilis.setValue(CounterThreadTimer.CYCLE_TIME_MILLIS);

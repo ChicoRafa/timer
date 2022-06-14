@@ -24,6 +24,10 @@ public class SignUpActivity extends AppCompatActivity {
     private Button registerButton;
     private TextView tvToLogin;
     private ImageView imBack;
+    private final int RQ_LOGIN = 14;
+    private final int RQ_REGISTER = 15;
+    private final String IK_LOGIN = "login_key";
+    private Intent intentFromLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +40,14 @@ public class SignUpActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.registerButton);
         tvToLogin = findViewById(R.id.tvToLogin);
         imBack = findViewById(R.id.imBack);
+        this.intentFromLogin = getIntent();
 
         imBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentToMain = new Intent(getApplicationContext(), rmr.kairos.activities.MainActivity.class);
-                startActivity(intentToMain);
+                Intent intentToLogin = new Intent(SignUpActivity.this, LoginActivity.class);
+                intentToLogin.putExtra(IK_LOGIN,RQ_REGISTER);
+                setResult(RQ_LOGIN,intentToLogin);
                 finish();
             }
         });
@@ -49,8 +55,9 @@ public class SignUpActivity extends AppCompatActivity {
         tvToLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentToLogin = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intentToLogin);
+                Intent intentToLogin = new Intent(SignUpActivity.this, LoginActivity.class);
+                intentToLogin.putExtra(IK_LOGIN,RQ_REGISTER);
+                setResult(RQ_LOGIN,intentToLogin);
                 finish();
             }
         });

@@ -1,12 +1,23 @@
 package rmr.kairos.activities;
 
+import androidx.activity.ComponentActivity;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.ActivityResultRegistry;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceManager;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -40,6 +51,26 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
     public static final String SERVICE_EXTRA = "timerExtra";
     private Intent serviceIntent;
     private boolean isFirst = true;
+    private SharedPreferences kp;
+    private final int RQ_MAIN = 10;
+    private final String IK_MAIN = "main_key";
+    private ActivityResultLauncher<Intent> launcher;
+    private final ActivityResultRegistry mRegistry;
+
+    public MainActivity(){
+        this.mRegistry = new ActivityResultRegistry() {
+            @Override
+            public <I, O> void onLaunch(int requestCode, @NonNull ActivityResultContract<I, O> contract, I input, @Nullable ActivityOptionsCompat options) {
+                ComponentActivity activity = MainActivity.this;
+                Intent intent = contract.createIntent(activity, input);
+                Bundle optionsBundle = null;
+                if (intent.getExtras() != null && intent.getExtras().getClassLoader() == null) {
+                    intent.setExtrasClassLoader(activity.getClassLoader());
+                }
+                ActivityCompat.startActivityForResult(activity, intent, requestCode, optionsBundle);
+            }
+        };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         this.tvState = findViewById(R.id.tvState);
         this.tvSession = findViewById(R.id.tvSession);
         this.imPreferences = findViewById(R.id.imPreferences);
+        this.kp = PreferenceManager.getDefaultSharedPreferences(this);
+        this.tvTimer.setText(String.valueOf(kp.getInt("work_value_key",25))+":00");
         //createNotificationChannel();
         //this.tvToLogin = findViewById(R.id.opLogin);
         this.tvTimer.setOnClickListener(new View.OnClickListener() {
@@ -132,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
                 preferencesTransaction.commit();
             }
         });
+        this.setUpLauncher();
 
     }
 
@@ -194,24 +228,30 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         switch (op) {
             case 1:
                 Intent intentToAjustes = new Intent(getApplicationContext(), SettingsActivity.class);
-                startActivity(intentToAjustes);
-                finish();
+                intentToAjustes.putExtra(IK_MAIN, RQ_MAIN);
+                launcher.launch(intentToAjustes);
                 break;
             case 2:
                 Intent intentToStat = new Intent(getApplicationContext(), StatActivity.class);
-                startActivity(intentToStat);
-                finish();
+                intentToStat.putExtra(IK_MAIN, RQ_MAIN);
+                launcher.launch(intentToStat);
                 break;
             case 3:
                 Intent intentToTag = new Intent(getApplicationContext(), TagActivity.class);
-                startActivity(intentToTag);
-                finish();
+                intentToTag.putExtra(IK_MAIN, RQ_MAIN);
+                launcher.launch(intentToTag);
                 break;
             case 4:
                 Intent intentToLogin = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intentToLogin);
-                finish();
+                intentToLogin.putExtra(IK_MAIN, RQ_MAIN);
+                launcher.launch(intentToLogin);
                 break;
         }
+    }
+
+    private void setUpLauncher(){
+        this.launcher = this.mRegistry.register(IK_MAIN,
+                new ActivityResultContracts.StartActivityForResult(),
+                null);
     }
 }

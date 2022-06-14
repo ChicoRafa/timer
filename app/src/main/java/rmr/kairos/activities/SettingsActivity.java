@@ -1,5 +1,6 @@
 package rmr.kairos.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -13,7 +14,9 @@ import androidx.preference.SeekBarPreference;
 import rmr.kairos.R;
 
 public class SettingsActivity extends AppCompatActivity {
-
+    private final int RQ_MAIN = 10;
+    private final String IK_MAIN = "main_key";
+    private Intent intentFromMain;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +32,8 @@ public class SettingsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        this.intentFromMain = getIntent();
+
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
@@ -41,13 +46,14 @@ public class SettingsActivity extends AppCompatActivity {
         public void setWorkValue(Integer workValue) {
             this.workValue = workValue;
         }
+
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
             SeekBarPreference sbWork = findPreference("work_bar_key");
             SeekBarPreference sbBreak = findPreference("break_bar_key");
             SeekBarPreference sbSleep = findPreference("sleep_bar_key");
-            if (sbWork != null){
+            if (sbWork != null) {
                 sbWork.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
@@ -75,5 +81,14 @@ public class SettingsActivity extends AppCompatActivity {
                 });
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intentToMain = new Intent(SettingsActivity.this, MainActivity.class);
+        intentToMain.putExtra(IK_MAIN, RQ_MAIN);
+        setResult(RQ_MAIN, intentToMain);
+        finish();
     }
 }

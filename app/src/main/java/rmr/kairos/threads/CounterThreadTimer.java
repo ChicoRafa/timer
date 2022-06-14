@@ -1,15 +1,12 @@
 package rmr.kairos.threads;
 
-import android.content.Context;
+import android.content.SharedPreferences;
 
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import rmr.kairos.activities.MainActivity;
-import rmr.kairos.activities.SettingsActivity;
 import rmr.kairos.util.KairosLong;
-import rmr.kairos.util.KairosPreference;
 
 /**
  * Temporizador formado por un Timer y un TimerTask. El Timer está sincronizado para que
@@ -29,12 +26,11 @@ public class CounterThreadTimer {
     public static final int TIMER_RUNNING = 105;
     public static final int TIMER_STARTING = 106;
     public static final int TIMER_CYCLING = 107;
-    static KairosPreference kp = new KairosPreference();
-    static MainActivity ma = new MainActivity();
+    //static MainActivity ma = new MainActivity();
     //tiempos para los estados de los ciclos de vida
-    public static final long START_TIME_MILIS = kp.getWorkValue(ma.getApplicationContext())*(60000);
-    public static final long BREAK_TIME_MILIS = (3000);
-    public static final long LONG_BREAK_TIME_MILIS = (4000);
+    private long startTimeMillis;
+    private long breakTimeMilis;
+    private long longBreakTimeMilis;
     public static final int CYCLE_TIME_MILLIS = 5000;
 
     private int timerState;
@@ -42,8 +38,11 @@ public class CounterThreadTimer {
     private Timer timer;
     private TimerTask timerTask;
     private LifeCycleThread lifeCycleThread;
+    private SharedPreferences kp;
 
-    public CounterThreadTimer(LifeCycleThread lifeCycleThread) {
+    public CounterThreadTimer(SharedPreferences kp,LifeCycleThread lifeCycleThread) {
+        this.kp = kp;
+        this.initializeProperties();
         this.lifeCycleThread = lifeCycleThread;
         if(lifeCycleThread.getLifeCycleState()==LifeCycleThread.CYCLING)
             this.timerState = TIMER_CYCLING;
@@ -51,6 +50,11 @@ public class CounterThreadTimer {
             this.timerState = TIMER_STARTED;
         this.timeLeftMilis = new KairosLong(0);
         this.timer = new Timer("CounterThreadTimer");
+    }
+    private void initializeProperties(){
+        this.startTimeMillis = this.kp.getInt("work_bar_key", 25)*60000;
+        this.breakTimeMilis = this.kp.getInt("break_bar_key",5)*60000;
+        this.longBreakTimeMilis = this.kp.getInt("sleep_bar_key",15)*60000;
     }
 
     private void startTimerTask() {
@@ -89,12 +93,12 @@ public class CounterThreadTimer {
                             lifeCycleThread.updateSessionText(1);
                             lifeCycleThread.updateStateText(lifeCycleThread.getWorkingStateText());
                             if (lifeCycleThread.getLifeCycleSession() < 4) {
-                                timeLeftMilis.setValue(BREAK_TIME_MILIS);
+                                timeLeftMilis.setValue(breakTimeMilis);
                                 lifeCycleThread.updateStateText(lifeCycleThread.getBreakingStateText());
                                 lifeCycleThread.setLifeCycleState(LifeCycleThread.BREAKING);
                             } else {
                                 lifeCycleThread.setLifeCycleSession(0);
-                                timeLeftMilis.setValue(LONG_BREAK_TIME_MILIS);
+                                timeLeftMilis.setValue(longBreakTimeMilis);
                                 lifeCycleThread.updateStateText(lifeCycleThread.getSleepingStateText());
                                 lifeCycleThread.setLifeCycleState(LifeCycleThread.SLEEPING);
                             }
@@ -102,7 +106,7 @@ public class CounterThreadTimer {
                         case LifeCycleThread.CYCLING:
                         case LifeCycleThread.BREAKING:
                         case LifeCycleThread.SLEEPING:
-                            timeLeftMilis.setValue(START_TIME_MILIS);
+                            timeLeftMilis.setValue(startTimeMillis);
                             lifeCycleThread.updateStateText(lifeCycleThread.getWorkingStateText());
                             lifeCycleThread.setLifeCycleState(LifeCycleThread.WORKING);
                             break;
@@ -145,7 +149,7 @@ public class CounterThreadTimer {
         this.timerTask.cancel();
         this.timer.cancel();
         this.timer.purge();
-        this.timeLeftMilis.setValue(START_TIME_MILIS);
+        this.timeLeftMilis.setValue(startTimeMillis);
         this.timerState = CounterThreadTimer.TIMER_STOPPED;
     }
 
@@ -184,5 +188,15 @@ public class CounterThreadTimer {
 
     public boolean hasStoped() {
         return this.timerState == CounterThreadTimer.TIMER_STOPPED;
+    }
+
+    public long getStartTimeMillis(){return this.startTimeMillis;}
+
+    public long getBreakTimeMilis() {
+        return breakTimeMilis;
+    }
+
+    public long getLongBreakTimeMilis() {
+        return longBreakTimeMilis;
     }
 }

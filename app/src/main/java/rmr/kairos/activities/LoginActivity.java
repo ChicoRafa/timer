@@ -10,7 +10,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.ComponentActivity;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.ActivityResultRegistry;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.vishnusivadas.advanced_httpurlconnection.PutData;
@@ -29,6 +38,25 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton; //botón de login
     private TextView tvToRegister;
     private ImageView imBack;
+    private final int RQ_LOGIN = 14;
+    private final String IK_LOGIN = "login_key";
+    private ActivityResultLauncher<Intent> launcher;
+    private final ActivityResultRegistry mRegistry;
+
+    public LoginActivity(){
+        this.mRegistry= new ActivityResultRegistry() {
+            @Override
+            public <I, O> void onLaunch(int requestCode, @NonNull ActivityResultContract<I, O> contract, I input, @Nullable ActivityOptionsCompat options) {
+                ComponentActivity activity = LoginActivity.this;
+                Intent intent = contract.createIntent(activity, input);
+                Bundle optionsBundle = null;
+                if (intent.getExtras() != null && intent.getExtras().getClassLoader() == null) {
+                    intent.setExtrasClassLoader(activity.getClassLoader());
+                }
+                ActivityCompat.startActivityForResult(activity, intent, requestCode, optionsBundle);
+            }
+        };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
         imBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentToMain = new Intent(getApplicationContext(), rmr.kairos.activities.MainActivity.class);
+                Intent intentToMain = new Intent(LoginActivity.this, rmr.kairos.activities.MainActivity.class);
                 startActivity(intentToMain);
                 finish();
             }
@@ -53,11 +81,13 @@ public class LoginActivity extends AppCompatActivity {
         tvToRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentToRegister = new Intent(getApplicationContext(), rmr.kairos.activities.SignUpActivity.class);
-                startActivity(intentToRegister);
-                finish();
+                Intent intentToRegister = new Intent(LoginActivity.this, rmr.kairos.activities.SignUpActivity.class);
+                intentToRegister.putExtra(IK_LOGIN, RQ_LOGIN);
+                launcher.launch(intentToRegister);
+
             }
         });
+        this.setUpLauncher();
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,5 +133,10 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+    }
+    private void setUpLauncher(){
+        this.launcher = this.mRegistry.register(IK_LOGIN,
+                new ActivityResultContracts.StartActivityForResult(),
+                null);
     }
 }
