@@ -80,7 +80,7 @@ public class SignUpActivity extends AppCompatActivity {
                             data[0] = username;
                             data[1] = password;
                             data[2] = mail;
-                            PutData putData = new PutData("http://192.168.0.14/login/LogIn-SignUp-master/LogIn-SignUp-master/signup.php", "POST", field, data);
+                            PutData putData = new PutData("http://192.168.56.1/login/LogIn-SignUp-master/LogIn-SignUp-master/signup.php", "POST", field, data);
                             if (putData.startPut()) {
                                 if (putData.onComplete()) {
                                     String result = putData.getResult();

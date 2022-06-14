@@ -14,6 +14,7 @@ import rmr.kairos.R;
 
 public class SettingsActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +32,15 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
+        public int workValue;
+
+        public Integer getWorkValue() {
+            return Integer.valueOf(workValue);
+        }
+
+        public void setWorkValue(Integer workValue) {
+            this.workValue = workValue;
+        }
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
@@ -45,6 +55,7 @@ public class SettingsActivity extends AppCompatActivity {
                             Integer workValueInt;
                             try {
                                 workValueInt = (Integer) newValue;
+                                setWorkValue(workValueInt);
                                 // Do something with the value
                             } catch (NumberFormatException nfe) {
                                 Toast.makeText(getActivity(),

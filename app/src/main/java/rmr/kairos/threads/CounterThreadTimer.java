@@ -1,9 +1,15 @@
 package rmr.kairos.threads;
 
+import android.content.Context;
+
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import rmr.kairos.activities.MainActivity;
+import rmr.kairos.activities.SettingsActivity;
 import rmr.kairos.util.KairosLong;
+import rmr.kairos.util.KairosPreference;
 
 /**
  * Temporizador formado por un Timer y un TimerTask. El Timer está sincronizado para que
@@ -23,9 +29,10 @@ public class CounterThreadTimer {
     public static final int TIMER_RUNNING = 105;
     public static final int TIMER_STARTING = 106;
     public static final int TIMER_CYCLING = 107;
-
+    static KairosPreference kp = new KairosPreference();
+    static MainActivity ma = new MainActivity();
     //tiempos para los estados de los ciclos de vida
-    public static final long START_TIME_MILIS = (6000);
+    public static final long START_TIME_MILIS = kp.getWorkValue(ma.getApplicationContext())*(60000);
     public static final long BREAK_TIME_MILIS = (3000);
     public static final long LONG_BREAK_TIME_MILIS = (4000);
     public static final int CYCLE_TIME_MILLIS = 5000;
