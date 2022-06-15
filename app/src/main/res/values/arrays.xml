@@ -14,5 +14,19 @@
         <item>#7F00FF</item>
         <item>#FF00FF</item>
     </string-array>
+    <string-array name="tagSpinnerColor">
+        <item>Rosa</item>
+        <item>Rojo</item>
+        <item>Naranja</item>
+        <item>Amarillo</item>
+        <item>Verde Pistacho</item>
+        <item>Verde</item>
+        <item>Turquesa</item>
+        <item>Cian</item>
+        <item>Azur</item>
+        <item>Azul</item>
+        <item>Violeta</item>
+        <item>Magenta</item>
+    </string-array>
 
 </resources>

@@ -40,4 +40,5 @@
     <string name="azul">Azul</string>
     <string name="violeta">Violeta</string>
     <string name="magenta">Magenta</string>
+    <string name="strTagListError">Error al cargar la lista de etiquetas</string>
 </resources>

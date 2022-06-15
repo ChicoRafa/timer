@@ -50,7 +50,7 @@
             android:fontFamily="@font/simplifica"
             android:paddingLeft="0dp"
             android:paddingRight="0dp"
-            android:src="@drawable/ic_baseline_edit_attributes_24"
+            android:src="@drawable/ic_baseline_edit_24"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
             android:textColorHint="#FF5252"
