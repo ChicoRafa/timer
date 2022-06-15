@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -49,6 +50,7 @@ public class TagActivity extends AppCompatActivity {
         lvTag = findViewById(R.id.lvTags);
         imBack = findViewById(R.id.imBack);
         imNewTag = findViewById(R.id.imNewTag);
+
         imBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,6 +67,7 @@ public class TagActivity extends AppCompatActivity {
         });
         //newTagList(lvTag);
         listaEtiquetas();
+
     }
 
     public TagAdapter newTagList(ListView lvTag, ArrayList<String> listaDatos) {
@@ -84,8 +87,16 @@ public class TagActivity extends AppCompatActivity {
         }
         TagAdapter tagAdapter = new TagAdapter(this, R.layout.layout_tag, listaEtiquetas);
         lvTag.setAdapter(tagAdapter);
+        lvTag.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(TagActivity.this, "Toque"+i, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         return tagAdapter;
+
     }
 
     public void showTagDialog() {
@@ -130,7 +141,7 @@ public class TagActivity extends AppCompatActivity {
                             String[] data = new String[2];
                             data[0] = etTagName.getText().toString();
                             data[1] = hexColor;
-                            PutData putData = new PutData("http://192.168.56.1/login/LogIn-SignUp-master/LogIn-SignUp-master/setTag.php", "POST", field, data);
+                            PutData putData = new PutData("http://192.168.0.15/login/LogIn-SignUp-master/LogIn-SignUp-master/setTag.php", "POST", field, data);
                             if (putData.startPut()) {
                                 if (putData.onComplete()) {
                                     String result = putData.getResult();
@@ -164,7 +175,7 @@ public class TagActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                FetchData fetchData = new FetchData("http://192.168.56.1/login/LogIn-SignUp-master/LogIn-SignUp-master/getTag.php");
+                FetchData fetchData = new FetchData("http://192.168.0.15/login/LogIn-SignUp-master/LogIn-SignUp-master/getTag.php");
                 if (fetchData.startFetch()) {
                     if (fetchData.onComplete()) {
                         Pattern pName = Pattern.compile("nombre_tag");

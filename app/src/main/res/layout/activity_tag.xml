@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
+    android:descendantFocusability="blocksDescendants"
     tools:context=".activities.TagActivity">
 
     <ImageView
@@ -17,7 +18,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.021"
-        app:srcCompat="@drawable/ic_back" />
+        app:srcCompat="@drawable/ic_back"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
 
     <TextView
         android:id="@+id/tvTag"
@@ -33,7 +37,8 @@
         app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintStart_toEndOf="@+id/imBack"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023" />
+        app:layout_constraintVertical_bias="0.023"
+        />
 
     <ImageView
         android:id="@+id/imNewTag"
@@ -45,7 +50,10 @@
         app:layout_constraintStart_toEndOf="@+id/tvTag"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.028"
-        app:srcCompat="@drawable/ic_baseline_library_add_24" />
+        app:srcCompat="@drawable/ic_baseline_library_add_24"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -63,6 +71,11 @@
             android:id="@+id/lvTags"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:descendantFocusability="blocksDescendants"
+
             android:layout_margin="10dp" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -111,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
                             String[] data = new String[2];
                             data[0] = username;
                             data[1] = password;
-                            PutData putData = new PutData("http://192.168.56.1/login/LogIn-SignUp-master/LogIn-SignUp-master/login.php", "POST", field, data);
+                            PutData putData = new PutData("http://192.168.0.15/login/LogIn-SignUp-master/LogIn-SignUp-master/login.php", "POST", field, data);
                             if (putData.startPut()) {
                                 if (putData.onComplete()) {
                                     String result = putData.getResult();
