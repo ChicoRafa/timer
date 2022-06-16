@@ -109,6 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (listaUsuarios.get(i).getUsername().equals(username) && listaUsuarios.get(i).getPassword().equals(password)) {
                             Toast.makeText(LoginActivity.this, R.string.strSuccesfulLogin , Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            intent.putExtra("Logueado",true);
                             startActivity(intent);
                             finish();
                             Log.d("RMRTAG", "onClick: " + listaUsuarios.get(0).getUsername());

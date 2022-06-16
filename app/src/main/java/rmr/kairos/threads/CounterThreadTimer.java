@@ -1,7 +1,11 @@
 package rmr.kairos.threads;
 
 import android.content.SharedPreferences;
+import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+
+import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,6 +43,8 @@ public class CounterThreadTimer {
     private TimerTask timerTask;
     private LifeCycleThread lifeCycleThread;
     private SharedPreferences kp;
+    //private int workTime;
+    //private String day = LocalDate.now().getDayOfWeek().toString();
 
     public CounterThreadTimer(SharedPreferences kp,LifeCycleThread lifeCycleThread) {
         this.kp = kp;

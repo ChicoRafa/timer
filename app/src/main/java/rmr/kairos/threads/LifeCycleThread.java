@@ -1,8 +1,14 @@
 package rmr.kairos.threads;
 
 import android.content.SharedPreferences;
+import android.os.Build;
 
+import androidx.annotation.RequiresApi;
 import androidx.preference.PreferenceManager;
+
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import rmr.kairos.R;
 import rmr.kairos.activities.MainActivity;
@@ -25,6 +31,8 @@ public class LifeCycleThread implements Runnable {
     private int lifeCycleState;
     private MainActivity mainActivity;
     private SharedPreferences kp;
+   // private int workTime;
+    //private String day = LocalDate.now().getDayOfWeek().toString();
 
     public LifeCycleThread(int session, int state, LayoutUpdatable layoutUpdatable) {
         this.mainActivity = (MainActivity) layoutUpdatable;

@@ -38,6 +38,8 @@ import android.widget.Toast;
 
 import com.google.android.material.slider.Slider;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -46,6 +48,7 @@ import rmr.kairos.adapters.TagMainAdapter;
 import rmr.kairos.controllers.OnSwipeTouchListener;
 import rmr.kairos.database.KairosDB;
 import rmr.kairos.database.KairosHelper;
+import rmr.kairos.dialogs.TagDialog;
 import rmr.kairos.fragments.PreferenceFragment;
 import rmr.kairos.interfaces.LayoutUpdatable;
 import rmr.kairos.model.Tag;
@@ -79,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
     private SQLiteDatabase dbKairos;
     private KairosDB db = new KairosDB(MainActivity.this);
     private RecyclerView rvTagMain;
+    private int tiempoRestante = 0;
+    private int workTime = 0;
+    private boolean logueado = false;
 
     public MainActivity() {
         this.mRegistry = new ActivityResultRegistry() {
@@ -105,11 +111,15 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         this.imPreferences = findViewById(R.id.imPreferences);
         this.imTag = findViewById(R.id.imTag);
         this.tvTagMain = findViewById(R.id.tvTagMain);
-        this.rvTagMain = findViewById(R.id.rvTagDialog);
+        this.rvTagMain = new RecyclerView(this);
+        try{
+            this.logueado = getIntent().getExtras().getBoolean("Logueado");
+        }catch (NullPointerException np){
+            np.toString();
+        }
         this.kp = PreferenceManager.getDefaultSharedPreferences(this);
         this.tvTimer.setText(String.valueOf(kp.getInt("work_value_key", 25)) + ":00");
         dbKairos = dbHelper.getWritableDatabase();
-        this.rvTagMain.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         //createNotificationChannel();
         //this.tvToLogin = findViewById(R.id.opLogin);
         this.tvTimer.setOnClickListener(new View.OnClickListener() {
@@ -138,6 +148,11 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
                 if (!timerThread.timerHasPaused()) return true;
                 //se finaliza el hilo anterior que se encargará de detener al temporizador
                 timerThread.endTimer();
+                if (logueado) {
+                    tiempoRestante = Integer.valueOf(tvTimer.getText().toString().substring(0, 2));
+                    workTime = kp.getInt("work_bar_key", 25) - tiempoRestante;
+                    db.updateStat(getDia(), workTime);
+                }
                 //stopService();
                 Toast.makeText(MainActivity.this, "Se ha detenido el ciclo, en " +
                         CounterThreadTimer.CYCLE_TIME_MILLIS / 1000 +
@@ -196,7 +211,10 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         this.imTag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //AlertDialog dg = null;
                 tagDialog();
+                //dg.setContentView();
+
             }
         });
         this.setUpLauncher();
@@ -268,9 +286,11 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
                 launcher.launch(intentToAjustes);
                 break;
             case 2:
-                Intent intentToStat = new Intent(getApplicationContext(), StatActivity.class);
-                intentToStat.putExtra(IK_MAIN, RQ_MAIN);
-                launcher.launch(intentToStat);
+                if (logueado) {
+                    Intent intentToStat = new Intent(getApplicationContext(), StatActivity.class);
+                    intentToStat.putExtra(IK_MAIN, RQ_MAIN);
+                    launcher.launch(intentToStat);
+                }else Toast.makeText(this, R.string.strStatNotLogged , Toast.LENGTH_SHORT).show();
                 break;
             case 3:
                 Intent intentToTag = new Intent(getApplicationContext(), TagActivity.class);
@@ -289,6 +309,13 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         AlertDialog.Builder tagBuilder = new AlertDialog.Builder(MainActivity.this);
         View tagView = getLayoutInflater().inflate(R.layout.dialog_tag_main, null);
 
+
+        tagBuilder.setCancelable(true);
+        tagBuilder.setView(tagView);
+        AlertDialog dialog = tagBuilder.create();
+        dialog.show();
+        this.rvTagMain = findViewById(R.id.rvTagDialog);
+        this.rvTagMain.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         TagMainAdapter tagMainAdapter = new TagMainAdapter(db.selectTags(), new TagMainAdapter.ItemClickListener() {
             @Override
             public void onItemClick(Tag tag) {
@@ -304,15 +331,30 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
             }
         });
         rvTagMain.setAdapter(tagMainAdapter);
-        tagBuilder.setCancelable(true);
-        tagBuilder.setView(tagView);
-        AlertDialog dialog = tagBuilder.create();
-        dialog.show();
-    }
 
+
+    }
+    private String getDia(){
+        String day = "";
+        String dia = "";
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            day = LocalDate.now().getDayOfWeek().toString();
+        }
+        switch (day){
+            case "MONDAY": dia = "lunes"; break;
+            case "TUESDAY": dia = "martes"; break;
+            case "WEDNESDAY": dia = "miercoles"; break;
+            case "THURSDAY": dia = "jueves"; break;
+            case "FRIDAY": dia = "viernes"; break;
+            case "SATURDAY": dia = "sabado"; break;
+            case "SUNDAY": dia = "domingo"; break;
+        }
+        return dia;
+    }
     private void setUpLauncher() {
         this.launcher = this.mRegistry.register(IK_MAIN,
                 new ActivityResultContracts.StartActivityForResult(),
                 null);
+
     }
 }

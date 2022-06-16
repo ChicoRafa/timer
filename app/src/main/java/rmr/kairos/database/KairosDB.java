@@ -9,9 +9,16 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import rmr.kairos.model.Estadistica;
 import rmr.kairos.model.Tag;
 import rmr.kairos.model.Usuario;
 
+/**
+ * Clase que contiene todos los métodos utilizados por la BDD con objeto de manejar los datos
+ *
+ * @author Rafa M.
+ * @version 2.0
+ */
 public class KairosDB extends KairosHelper {
     Context context;
 
@@ -52,6 +59,21 @@ public class KairosDB extends KairosHelper {
         return id;
     }
 
+    public long insertStat(int workTime) {
+        long id = 0;
+        try {
+            KairosHelper helper = new KairosHelper(context);
+            SQLiteDatabase db = helper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("tiempo", workTime);
+            //values.put("color_code",tagColorCode);
+            id = db.insert(TABLE_STATS, null, values);
+        } catch (Exception e) {
+            e.toString();
+        }
+        return id;
+    }
+
     public ArrayList<Usuario> selectUsers() {
         KairosHelper helper = new KairosHelper(context);
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -71,6 +93,25 @@ public class KairosDB extends KairosHelper {
         }
         cursorUsuarios.close();
         return listaUsuarios;
+    }
+
+    public ArrayList<Estadistica> selectStats() {
+        KairosHelper helper = new KairosHelper(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ArrayList<Estadistica> listaEstadistica = new ArrayList<>();
+        Estadistica stat = null;
+        Cursor cursorStat = null;
+        cursorStat = db.rawQuery("SELECT * FROM " + TABLE_STATS, null);
+        if (cursorStat.moveToFirst()) {
+            do {
+                stat = new Estadistica();
+                stat.setDia(cursorStat.getString(0));
+                stat.setWorkTime(cursorStat.getInt(1));
+                listaEstadistica.add(stat);
+            } while (cursorStat.moveToNext());
+        }
+        cursorStat.close();
+        return listaEstadistica;
     }
 
     public ArrayList<Tag> selectTags() {
@@ -93,13 +134,31 @@ public class KairosDB extends KairosHelper {
         return listaEtiquetas;
     }
 
+    public Estadistica selectSingleStat(String dia) {
+        KairosHelper helper = new KairosHelper(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ArrayList<Estadistica> listaEstadistica = new ArrayList<>();
+        Estadistica stat = null;
+        Cursor cursorStat = null;
+        cursorStat = db.rawQuery("SELECT * FROM " + TABLE_STATS + " WHERE dia_semana = '" + dia + "' LIMIT 1", null);
+        if (cursorStat.moveToFirst()) {
+            stat = new Estadistica();
+            stat.setDia(cursorStat.getString(0));
+            stat.setWorkTime(cursorStat.getInt(1));
+            listaEstadistica.add(stat);
+        }
+        cursorStat.close();
+        return stat;
+    }
+
     public Tag selectSingleTag(String name) {
         KairosHelper helper = new KairosHelper(context);
         SQLiteDatabase db = helper.getWritableDatabase();
         ArrayList<Tag> listaEtiquetas = new ArrayList<>();
         Tag tag = null;
         Cursor cursorEtiquetas = null;
-        cursorEtiquetas = db.rawQuery("SELECT * FROM " + TABLE_TAGS + " WHERE nombre_tag = '" + name + "' LIMIT 1", null);
+        cursorEtiquetas = db.rawQuery("SELECT * FROM " + TABLE_TAGS + " WHERE nombre_tag = '"
+                + name + "' LIMIT 1", null);
         if (cursorEtiquetas.moveToFirst()) {
             tag = new Tag();
             tag.setId(cursorEtiquetas.getInt(0));
@@ -111,6 +170,41 @@ public class KairosDB extends KairosHelper {
         return tag;
     }
 
+    public boolean updateStat(String dia, int workTime) {
+        boolean correcto = false;
+        KairosHelper helper = new KairosHelper(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+
+        try {
+            db.execSQL("UPDATE " + TABLE_STATS +
+                    " SET tiempo = '" + workTime + "' WHERE dia_semana = '" + dia + "' ");
+            correcto = true;
+        } catch (Exception e) {
+            e.toString();
+            correcto = false;
+        } finally {
+            db.close();
+        }
+        return correcto;
+    }
+    public boolean updateAllStats(){
+        boolean correcto = false;
+        KairosHelper helper = new KairosHelper(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+
+        try {
+            db.execSQL("UPDATE " + TABLE_STATS +
+                    " SET tiempo = 0");
+            correcto = true;
+        } catch (Exception e) {
+            e.toString();
+            correcto = false;
+        } finally {
+            db.close();
+        }
+        return correcto;
+    }
+
     public boolean updateTag(int id, String tagName, String tagColor) {
         boolean correcto = false;
         KairosHelper helper = new KairosHelper(context);
@@ -118,7 +212,7 @@ public class KairosDB extends KairosHelper {
 
         try {
             db.execSQL("UPDATE " + TABLE_TAGS + " SET nombre_tag ='" + tagName + "', " +
-                    " color_tag = '" + tagColor + "' WHERE id = '" + id+"' ");
+                    " color_tag = '" + tagColor + "' WHERE id = '" + id + "' ");
             correcto = true;
         } catch (Exception e) {
             e.toString();
@@ -135,7 +229,7 @@ public class KairosDB extends KairosHelper {
         SQLiteDatabase db = helper.getWritableDatabase();
 
         try {
-            db.execSQL("DELETE FROM "+TABLE_TAGS+ " WHERE id ='"+id+"'");
+            db.execSQL("DELETE FROM " + TABLE_TAGS + " WHERE id ='" + id + "'");
             correcto = true;
         } catch (Exception e) {
             e.toString();
@@ -145,5 +239,6 @@ public class KairosDB extends KairosHelper {
         }
         return correcto;
     }
+
 
 }

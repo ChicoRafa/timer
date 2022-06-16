@@ -6,8 +6,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+/**
+ * Clase Helper que hereda de SQLiteOpenHelper, la cual crea la BDD y permite actualizarla
+ * entre otras funcionalidades
+ * @author Rafa M.
+ * @version 2.0
+ */
 public class KairosHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "kairos.db";
     public static final String TABLE_USERS = "t_users";
     public static final String TABLE_TAGS = "t_tags";
@@ -31,7 +37,9 @@ public class KairosHelper extends SQLiteOpenHelper {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "nombre_tag VARCHAR(50) NOT NULL DEFAULT '0'," +
                 "color_tag VARCAHR(50) NOT NULL DEFAULT '0')");
-
+        sqLiteDatabase.execSQL("CREATE TABLE "+TABLE_STATS+"( dia_semana VARCHAR(20) PRIMARY KEY," +
+                "tiempo INTEGER DEFAULT '0')");
+        sqLiteDatabase.execSQL("INSERT INTO "+TABLE_STATS+" (dia_semana) VALUES ('lunes'),('martes'),('miercoles'),('jueves'),('viernes'),('sabado'),('domingo');");
 
     }
 

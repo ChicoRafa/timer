@@ -48,4 +48,5 @@
     <string name="strLoginFail">Credenciales Inválidas</string>
     <string name="strDeleteTagF">Error al Eliminar</string>
     <string name="strDeleteTagT">Etiqueta Eliminada</string>
+    <string name="strStatNotLogged">Debe iniciar sesión para usar esta funcionalidad</string>
 </resources>
