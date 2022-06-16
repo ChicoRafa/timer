@@ -1,6 +1,8 @@
 package rmr.kairos.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -25,11 +27,13 @@ import com.vishnusivadas.advanced_httpurlconnection.PutData;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import rmr.kairos.R;
 import rmr.kairos.adapters.TagAdapter;
+import rmr.kairos.database.KairosDB;
 import rmr.kairos.model.Tag;
 
 /**
@@ -39,9 +43,10 @@ import rmr.kairos.model.Tag;
  * @version 1.0
  */
 public class TagActivity extends AppCompatActivity {
-    private ListView lvTag;
+    private RecyclerView lvTag;
     private ImageView imBack;
     private ImageView imNewTag;
+    private KairosDB db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +55,19 @@ public class TagActivity extends AppCompatActivity {
         lvTag = findViewById(R.id.lvTags);
         imBack = findViewById(R.id.imBack);
         imNewTag = findViewById(R.id.imNewTag);
+        ArrayList<Tag> listaEtiquetas = new ArrayList<>();
+        lvTag.setLayoutManager(new LinearLayoutManager(this));
+        db = new KairosDB(TagActivity.this);
+        TagAdapter tagAdapter = new TagAdapter(db.selectTags(), new TagAdapter.ItemClickListener() {
+            @Override
+            public void onItemClick(Tag tag) {
+                Toast.makeText(TagActivity.this, "la etiqueta "+tag.getTagName()+" ha sido pulsada"
+                        , Toast.LENGTH_SHORT).show();
+                editTag(tag.getTagName());
+            }
+        });
+        lvTag.setAdapter(tagAdapter);
+
 
         imBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,37 +83,6 @@ public class TagActivity extends AppCompatActivity {
                 showTagDialog();
             }
         });
-        //newTagList(lvTag);
-        listaEtiquetas();
-
-    }
-
-    public TagAdapter newTagList(ListView lvTag, ArrayList<String> listaDatos) {
-        String[] colorsCode = getResources().getStringArray(R.array.tagSpinnerArray);
-        String[] colorsName = getResources().getStringArray(R.array.tagSpinnerColor);
-        LinkedHashMap<String, String> mapaColores = new LinkedHashMap<String, String>();
-        for (int i = 0; i < colorsName.length; i++) {
-            mapaColores.put(colorsCode[i], colorsName[i]);
-        }
-        ArrayList<Tag> listaEtiquetas = new ArrayList<Tag>();
-
-        //introducir los valores con un diálogo o algo
-        for (int i = 1; i < listaDatos.size(); i++) {
-            String colorEtiqueta = mapaColores.get(listaDatos.get(i+1));
-            listaEtiquetas.add(new Tag(listaDatos.get(i), colorEtiqueta));
-            i++;
-        }
-        TagAdapter tagAdapter = new TagAdapter(this, R.layout.layout_tag, listaEtiquetas);
-        lvTag.setAdapter(tagAdapter);
-        lvTag.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(TagActivity.this, "Toque"+i, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        return tagAdapter;
 
     }
 
@@ -115,9 +102,7 @@ public class TagActivity extends AppCompatActivity {
         String[] colors = getResources().getStringArray(R.array.tagSpinnerArray);
         for (int i = 0; i < buttonList.size(); i++) {
             buttonList.get(i).setTextColor(Color.parseColor(colors[i]));
-            Log.d("RMRTAG", "run: " + colors[i]);
         }
-
         tagBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -125,84 +110,78 @@ public class TagActivity extends AppCompatActivity {
                 RadioButton checkedButton = tagView.findViewById(radioId);
                 int color = checkedButton.getCurrentTextColor();
                 String hexColor = String.format("#%06X", (0xFFFFFF & color));
-                //Log.d("XXXTAGXXX", "onClick: "+etTagName.getText() + " y " + hexColor);
                 if (!etTagName.equals("")) {
-                    //Start ProgressBar first (Set visibility VISIBLE)
-                    Handler handler = new Handler();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            //Starting Write and Read data with URL
-                            //Creating array for parameters
-                            String[] field = new String[2];
-                            field[0] = "nombre_tag";
-                            field[1] = "color_tag";
-                            //Creating array for data
-                            String[] data = new String[2];
-                            data[0] = etTagName.getText().toString();
-                            data[1] = hexColor;
-                            PutData putData = new PutData("http://192.168.0.15/login/LogIn-SignUp-master/LogIn-SignUp-master/setTag.php", "POST", field, data);
-                            if (putData.startPut()) {
-                                if (putData.onComplete()) {
-                                    String result = putData.getResult();
-                                    if (result.equals("Tag Creation Success")) {
-                                        Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-
-                                        //llamada al método add del listView
-                                    } else
-                                        Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
-                                    //End ProgressBar (Set visibility to GONE)
-                                }
-                            }
-                            //End Write and Read data with URL
-                        }
-                    });
-                } else
-                    Toast.makeText(getApplicationContext(), R.string.strAllFields, Toast.LENGTH_SHORT).show();
-                listaEtiquetas();
+                    long id = db.insertTag(etTagName.getText().toString(),checkedButton.getText().toString());
+                    if (id > 0){
+                        Toast.makeText(getApplicationContext(), R.string.strTagCreateT , Toast.LENGTH_SHORT).show();
+                        finish();
+                        startActivity(getIntent());
+                    }
+                    else Toast.makeText(getApplicationContext(), R.string.strTagCreateF , Toast.LENGTH_SHORT).show();
+                }
             }
         });
         tagBuilder.setCancelable(true);
         tagBuilder.setView(tagView);
         AlertDialog dialog = tagBuilder.create();
         dialog.show();
+        //return list;
     }
-
-    public void listaEtiquetas() {
-        ArrayList<String> list = new ArrayList<>();
-        Handler handler = new Handler();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-
-                FetchData fetchData = new FetchData("http://192.168.0.15/login/LogIn-SignUp-master/LogIn-SignUp-master/getTag.php");
-                if (fetchData.startFetch()) {
-                    if (fetchData.onComplete()) {
-                        Pattern pName = Pattern.compile("nombre_tag");
-                        Matcher m = pName.matcher(fetchData.getData().replaceAll("  ", ""));
-                        int n = 0;
-                        String cleanerData = fetchData.getData().replaceAll("  ", "");
-                        cleanerData = cleanerData.replaceAll("Array", "");
-                        cleanerData = cleanerData.replaceAll("=> ", "");
-                        cleanerData = cleanerData.replaceAll("\\[[0-9]", "")
-                                .replaceAll("\\[", " ")
-                                .replaceAll("]", "")
-                                .replaceAll("\\(", "").replaceAll("\\)", "")
-                                .replaceAll("nombre_tag", "")
-                                .replaceAll("color_tag", "");
-                        while (m.find()) {
-                            n++;
-                        }
-                        for (int i = 0; i <= n * 2; i++) {
-                            String tagNames[] = cleanerData.split("  ");
-                            list.add(tagNames[i]);
-                        }
-                        newTagList(lvTag, list);
-                    }
+    public void editTag(String tagName){
+        AlertDialog.Builder tagBuilder = new AlertDialog.Builder(TagActivity.this);
+        View tagView = getLayoutInflater().inflate(R.layout.dialog_tag, null);
+        TextView tvDialogTag = tagView.findViewById(R.id.tvDialogTag);
+        EditText etTagName = tagView.findViewById(R.id.etTagName);
+        etTagName.setText(tagName);
+        Tag editTag = db.selectSingleTag(etTagName.getText().toString());
+        RadioGroup rgColores = tagView.findViewById(R.id.rgColores);
+        ArrayList<RadioButton> buttonList = new ArrayList<RadioButton>();
+        for (int i = 0; i < rgColores.getChildCount(); i++) {
+            View bt = rgColores.getChildAt(i);
+            if (bt instanceof RadioButton) {
+                buttonList.add((RadioButton) bt);
+                if (((RadioButton) bt).getText().toString().equals(editTag.getTagColor().toString())){
+                    ((RadioButton) bt).setChecked(true);
                 }
-                //End Write and Read data with URL
+            }
+        }
+        String[] colors = getResources().getStringArray(R.array.tagSpinnerArray);
+        for (int i = 0; i < buttonList.size(); i++) {
+            buttonList.get(i).setTextColor(Color.parseColor(colors[i]));
+        }
+        tagBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                int radioId = rgColores.getCheckedRadioButtonId();
+                RadioButton checkedButton = tagView.findViewById(radioId);
+                int color = checkedButton.getCurrentTextColor();
+                String hexColor = String.format("#%06X", (0xFFFFFF & color));
+                if (!etTagName.equals("")) {
+                    boolean correcto = db.updateTag(editTag.getId(), etTagName.getText().toString(),checkedButton.getText().toString());
+                    if (correcto){
+                        Toast.makeText(getApplicationContext(), R.string.strTagCreateT , Toast.LENGTH_SHORT).show();
+                        finish();
+                        startActivity(getIntent());
+                    }
+                    else Toast.makeText(getApplicationContext(), R.string.strTagCreateF , Toast.LENGTH_SHORT).show();
+                }
             }
         });
-        //return list;
+        tagBuilder.setNegativeButton("Eliminar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                boolean correcto = db.deleteTag(editTag.getId());
+                if (correcto){
+                    Toast.makeText(getApplicationContext(), R.string.strDeleteTagT  , Toast.LENGTH_SHORT).show();
+                    finish();
+                    startActivity(getIntent());
+                }
+                else Toast.makeText(getApplicationContext(), R.string.strDeleteTagF  , Toast.LENGTH_SHORT).show();
+            }
+        });
+        tagBuilder.setCancelable(true);
+        tagBuilder.setView(tagView);
+        AlertDialog dialog = tagBuilder.create();
+        dialog.show();
     }
 }

@@ -14,31 +14,30 @@ import java.util.ArrayList;
 import rmr.kairos.R;
 import rmr.kairos.model.Tag;
 
-/**
- * Clase adaptador de las etiquetas
- * @author Rafa M.
- */
-public class TagAdapter extends RecyclerView.Adapter<TagAdapter.UsuarioViewHolder> {
+
+public class TagMainAdapter extends RecyclerView.Adapter<TagMainAdapter.TagViewHolder> {
     private Context activity;
     ArrayList<Tag> listaEtiquetas;
     private ItemClickListener mItemListener;
-    public TagAdapter(ArrayList<Tag> listaEtiquetas, ItemClickListener mItemListener) {
-       this.listaEtiquetas = listaEtiquetas;
-       this.mItemListener = mItemListener;
+
+    public TagMainAdapter(ArrayList<Tag> listaEtiquetas, ItemClickListener mItemListener) {
+        this.listaEtiquetas = listaEtiquetas;
+        this.mItemListener = mItemListener;
     }
 
     @NonNull
     @Override
-    public UsuarioViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_tag, null,
+    public TagMainAdapter.TagViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_tag_main, null,
                 false);
-        return  new UsuarioViewHolder(view);
+        return new TagViewHolder(view);
     }
 
+
     @Override
-    public void onBindViewHolder(@NonNull UsuarioViewHolder holder, int position) {
-        holder.tvTagTitle.setText("Nombre: "+listaEtiquetas.get(position).getTagName());
-        holder.tvTagColor.setText("Color: "+listaEtiquetas.get(position).getTagColor());
+    public void onBindViewHolder(@NonNull TagMainAdapter.TagViewHolder holder, int position) {
+        holder.tvTagTitle.setText("Nombre: " + listaEtiquetas.get(position).getTagName());
+        holder.tvTagColor.setText("Color: " + listaEtiquetas.get(position).getTagColor());
         //holder.tvTagColor.setTextColor(listaEtiquetas.get(position).getTagColorCode());
         holder.itemView.setOnClickListener(view -> {
             mItemListener.onItemClick(listaEtiquetas.get(position));
@@ -51,14 +50,15 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.UsuarioViewHolde
         return listaEtiquetas.size();
     }
 
-    public interface  ItemClickListener{
+    public interface ItemClickListener {
         void onItemClick(Tag tag);
     }
 
-    public class UsuarioViewHolder extends RecyclerView.ViewHolder {
+    public class TagViewHolder extends RecyclerView.ViewHolder {
         TextView tvTagTitle;
         TextView tvTagColor;
-        public UsuarioViewHolder(@NonNull View itemView) {
+
+        public TagViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTagTitle = itemView.findViewById(R.id.tvTagTitle);
             tvTagColor = itemView.findViewById(R.id.tvTagColor);

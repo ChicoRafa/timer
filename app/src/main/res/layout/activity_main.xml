@@ -89,4 +89,17 @@
         app:layout_constraintVertical_bias="0.001"
         app:srcCompat="@drawable/kairos_nm" />
 
+    <TextView
+        android:id="@+id/tvTagMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/simplifica"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/tvTimer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvState" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

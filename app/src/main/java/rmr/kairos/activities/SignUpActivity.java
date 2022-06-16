@@ -15,6 +15,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.vishnusivadas.advanced_httpurlconnection.PutData;
 
 import rmr.kairos.R;
+import rmr.kairos.database.KairosDB;
 
 /**
  *
@@ -28,6 +29,7 @@ public class SignUpActivity extends AppCompatActivity {
     private final int RQ_REGISTER = 15;
     private final String IK_LOGIN = "login_key";
     private Intent intentFromLogin;
+    private KairosDB db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,43 +71,16 @@ public class SignUpActivity extends AppCompatActivity {
                 username = String.valueOf(etUsername.getText().toString());
                 password = String.valueOf(etPass.getText().toString());
                 mail = String.valueOf(etMail.getText().toString());
-
                 if (!username.equals("") && !password.equals("") && !mail.equals("")) {
-                    //Start ProgressBar first (Set visibility VISIBLE)
-                    Handler handler = new Handler();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            //Starting Write and Read data with URL
-                            //Creating array for parameters
-                            String[] field = new String[3];
-                            field[0] = "username";
-                            field[1] = "password";
-                            field[2] = "email";
-                            //Creating array for data
-                            String[] data = new String[3];
-                            data[0] = username;
-                            data[1] = password;
-                            data[2] = mail;
-                            PutData putData = new PutData("http://192.168.0.15/login/LogIn-SignUp-master/LogIn-SignUp-master/signup.php", "POST", field, data);
-                            if (putData.startPut()) {
-                                if (putData.onComplete()) {
-                                    String result = putData.getResult();
-                                    if (result.equals("Sign Up Success")) {
-                                        Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else
-                                        Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
-                                    //End ProgressBar (Set visibility to GONE)
-                                }
-                            }
-                            //End Write and Read data with URL
-                        }
-                    });
-                } else
-                    Toast.makeText(getApplicationContext(), R.string.strAllFields, Toast.LENGTH_SHORT).show();
+                    db = new KairosDB(SignUpActivity.this);
+                    long id = db.insertUser(username, password, mail);
+                    if (id > 0) {
+                        Toast.makeText(SignUpActivity.this, R.string.strSuccesfulRegister, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }else Toast.makeText(getApplicationContext(), R.string.strAllFields, Toast.LENGTH_SHORT).show();
             }
         });
 

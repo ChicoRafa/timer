@@ -6,12 +6,33 @@ package rmr.kairos.model;
  * @version 1.0
  */
 public class Tag {
+    private int id;
     private String tagName;
     private String tagColor;
+    private String tagColorCode;
 
     public Tag(String tagName, String tagColor) {
         this.tagName = tagName;
         this.tagColor = tagColor;
+    }
+    public Tag(){
+
+    }
+
+    public String getTagColorCode() {
+        return tagColorCode;
+    }
+
+    public void setTagColorCode(String tagColorCode) {
+        this.tagColorCode = tagColorCode;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTagName() {

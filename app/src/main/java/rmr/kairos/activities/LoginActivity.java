@@ -3,6 +3,7 @@ package rmr.kairos.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -24,7 +25,11 @@ import androidx.core.app.ActivityOptionsCompat;
 import com.google.android.material.textfield.TextInputEditText;
 import com.vishnusivadas.advanced_httpurlconnection.PutData;
 
+import java.util.ArrayList;
+
 import rmr.kairos.R;
+import rmr.kairos.database.KairosDB;
+import rmr.kairos.model.Usuario;
 
 
 /**
@@ -42,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     private final String IK_LOGIN = "login_key";
     private ActivityResultLauncher<Intent> launcher;
     private final ActivityResultRegistry mRegistry;
+    private KairosDB db;
 
     public LoginActivity(){
         this.mRegistry= new ActivityResultRegistry() {
@@ -97,39 +103,18 @@ public class LoginActivity extends AppCompatActivity {
                 password = String.valueOf(etPass.getText().toString());
 
                 if (!username.equals("") && !password.equals("")) {
-                    //Start ProgressBar first (Set visibility VISIBLE)
-                    Handler handler = new Handler();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            //Starting Write and Read data with URL
-                            //Creating array for parameters
-                            String[] field = new String[2];
-                            field[0] = "username";
-                            field[1] = "password";
-                            //Creating array for data
-                            String[] data = new String[2];
-                            data[0] = username;
-                            data[1] = password;
-                            PutData putData = new PutData("http://192.168.0.15/login/LogIn-SignUp-master/LogIn-SignUp-master/login.php", "POST", field, data);
-                            if (putData.startPut()) {
-                                if (putData.onComplete()) {
-                                    String result = putData.getResult();
-                                    if (result.equals("Login Success")) {
-                                        Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else
-                                        Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
-                                    //End ProgressBar (Set visibility to GONE)
-                                }
-                            }
-                            //End Write and Read data with URL
+                    db = new KairosDB(LoginActivity.this);
+                    ArrayList<Usuario> listaUsuarios = db.selectUsers();
+                    for (int i = 0; i < listaUsuarios.size(); i++) {
+                        if (listaUsuarios.get(i).getUsername().equals(username) && listaUsuarios.get(i).getPassword().equals(password)) {
+                            Toast.makeText(LoginActivity.this, R.string.strSuccesfulLogin , Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                            Log.d("RMRTAG", "onClick: " + listaUsuarios.get(0).getUsername());
                         }
-                    });
-                } else
-                    Toast.makeText(getApplicationContext(), R.string.strAllFields, Toast.LENGTH_SHORT).show();
+                    }
+                }else Toast.makeText(LoginActivity.this, R.string.strLoginFail , Toast.LENGTH_SHORT).show();
             }
         });
 

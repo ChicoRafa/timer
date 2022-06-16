@@ -41,4 +41,11 @@
     <string name="violeta">Violeta</string>
     <string name="magenta">Magenta</string>
     <string name="strTagListError">Error al cargar la lista de etiquetas</string>
+    <string name="strSuccesfulRegister">Registro Exitoso</string>
+    <string name="strSuccesfulLogin">Login Exitoso</string>
+    <string name="strTagCreateT">Etiqueta Creada Exitosamente</string>
+    <string name="strTagCreateF">No se pudo crear la Etiqueta</string>
+    <string name="strLoginFail">Credenciales Inválidas</string>
+    <string name="strDeleteTagF">Error al Eliminar</string>
+    <string name="strDeleteTagT">Etiqueta Eliminada</string>
 </resources>

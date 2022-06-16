@@ -13,25 +13,42 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.slider.Slider;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+
 import rmr.kairos.R;
+import rmr.kairos.adapters.TagMainAdapter;
 import rmr.kairos.controllers.OnSwipeTouchListener;
+import rmr.kairos.database.KairosDB;
+import rmr.kairos.database.KairosHelper;
 import rmr.kairos.fragments.PreferenceFragment;
 import rmr.kairos.interfaces.LayoutUpdatable;
+import rmr.kairos.model.Tag;
 import rmr.kairos.threads.CounterThreadTimer;
 import rmr.kairos.threads.LifeCycleThread;
 
@@ -43,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
     private TextView tvTimer;
     private TextView tvSession;
     private TextView tvState;
+    private ImageView imTag;
+    private TextView tvTagMain;
     //private TextView tvToLogin;
     private ImageView imPreferences;
     private LifeCycleThread timerThread = null;
@@ -56,8 +75,12 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
     private final String IK_MAIN = "main_key";
     private ActivityResultLauncher<Intent> launcher;
     private final ActivityResultRegistry mRegistry;
+    private KairosHelper dbHelper = new KairosHelper(MainActivity.this);
+    private SQLiteDatabase dbKairos;
+    private KairosDB db = new KairosDB(MainActivity.this);
+    private RecyclerView rvTagMain;
 
-    public MainActivity(){
+    public MainActivity() {
         this.mRegistry = new ActivityResultRegistry() {
             @Override
             public <I, O> void onLaunch(int requestCode, @NonNull ActivityResultContract<I, O> contract, I input, @Nullable ActivityOptionsCompat options) {
@@ -80,8 +103,13 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         this.tvState = findViewById(R.id.tvState);
         this.tvSession = findViewById(R.id.tvSession);
         this.imPreferences = findViewById(R.id.imPreferences);
+        this.imTag = findViewById(R.id.imTag);
+        this.tvTagMain = findViewById(R.id.tvTagMain);
+        this.rvTagMain = findViewById(R.id.rvTagDialog);
         this.kp = PreferenceManager.getDefaultSharedPreferences(this);
-        this.tvTimer.setText(String.valueOf(kp.getInt("work_value_key",25))+":00");
+        this.tvTimer.setText(String.valueOf(kp.getInt("work_value_key", 25)) + ":00");
+        dbKairos = dbHelper.getWritableDatabase();
+        this.rvTagMain.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         //createNotificationChannel();
         //this.tvToLogin = findViewById(R.id.opLogin);
         this.tvTimer.setOnClickListener(new View.OnClickListener() {
@@ -147,11 +175,11 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         this.tvSession.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if (timerThread.timerHasPaused()){
+                if (timerThread.timerHasPaused()) {
                     clearSessionText("0");
                     lifeCycleSession = 0;
-                }
-                else Toast.makeText(MainActivity.this, R.string.strRestartSessions, Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(MainActivity.this, R.string.strRestartSessions, Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
@@ -165,7 +193,14 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
                 preferencesTransaction.commit();
             }
         });
+        this.imTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tagDialog();
+            }
+        });
         this.setUpLauncher();
+
 
     }
 
@@ -188,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
     public void clearSessionText(String text) {
         this.tvSession.setText(text);
     }
+
     /*public void setSliderListener(){
         if (lifeCycleThread!=null) {
             this.tvTimer.setOnTouchListener(new OnSwipeTouchListener(this) {
@@ -249,7 +285,32 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         }
     }
 
-    private void setUpLauncher(){
+    public void tagDialog() {
+        AlertDialog.Builder tagBuilder = new AlertDialog.Builder(MainActivity.this);
+        View tagView = getLayoutInflater().inflate(R.layout.dialog_tag_main, null);
+
+        TagMainAdapter tagMainAdapter = new TagMainAdapter(db.selectTags(), new TagMainAdapter.ItemClickListener() {
+            @Override
+            public void onItemClick(Tag tag) {
+                String[] colorsCode = getResources().getStringArray(R.array.tagSpinnerArray);
+                String[] colorsName = getResources().getStringArray(R.array.tagSpinnerColor);
+                LinkedHashMap<String, String> mapaColores = new LinkedHashMap<String, String>();
+                for (int i = 0; i < colorsName.length; i++) {
+                    mapaColores.put(colorsName[i], colorsCode[i]);
+                }
+                tvTagMain.setTextColor(Color.parseColor(mapaColores.get(tag.getTagColor())));
+                tvTagMain.setText(tag.getTagName());
+                tvTagMain.setVisibility(View.VISIBLE);
+            }
+        });
+        rvTagMain.setAdapter(tagMainAdapter);
+        tagBuilder.setCancelable(true);
+        tagBuilder.setView(tagView);
+        AlertDialog dialog = tagBuilder.create();
+        dialog.show();
+    }
+
+    private void setUpLauncher() {
         this.launcher = this.mRegistry.register(IK_MAIN,
                 new ActivityResultContracts.StartActivityForResult(),
                 null);
