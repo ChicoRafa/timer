@@ -5,13 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    android:backgroundTint="#000000"
+    android:backgroundTint="?attr/bgColor"
     tools:context=".activities.LoginActivity">
 
   <ImageView
       android:id="@+id/imBack"
       android:layout_width="42dp"
       android:layout_height="42dp"
+      android:tint="?attr/imColor"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.043"
@@ -36,7 +37,7 @@
       android:layout_height="wrap_content"
       android:fontFamily="@font/simplifica"
       android:text="@string/strSingUp"
-      android:textColor="#FFFFFF"
+      android:textColor="?attr/tColor"
       android:textSize="55sp"
       android:textStyle="bold"
       app:layout_constraintBottom_toTopOf="@+id/tilUsername"
@@ -66,8 +67,8 @@
         android:drawableEnd="@drawable/ic_user"
         android:fontFamily="@font/simplifica"
         android:hint="@string/username"
-        android:shadowColor="#FFFFFF"
-        android:textColor="#FFFFFF"
+        android:shadowColor="?attr/tColor"
+        android:textColor="?attr/bgColor"
         android:textSize="24sp"
         android:textStyle="bold" />
   </com.google.android.material.textfield.TextInputLayout>
@@ -92,6 +93,7 @@
         android:drawableEnd="@drawable/ic_email"
         android:fontFamily="@font/simplifica"
         android:hint="@string/email"
+        android:textColor="?attr/bgColor"
         android:textSize="24sp"
         android:textStyle="bold" />
   </com.google.android.material.textfield.TextInputLayout>
@@ -117,6 +119,7 @@
         android:fontFamily="@font/simplifica"
         android:hint="@string/password"
         android:inputType="textPassword"
+        android:textColor="?attr/bgColor"
         android:textSize="24sp"
         android:textStyle="bold" />
   </com.google.android.material.textfield.TextInputLayout>
@@ -140,7 +143,7 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/tilPass"
       app:layout_constraintVertical_bias="0.149"
-      app:strokeColor="#FFFFFF" />
+      app:strokeColor="?attr/tColor" />
 
   <TextView
       android:id="@+id/tvToLogin"
@@ -148,7 +151,7 @@
       android:layout_height="wrap_content"
       android:fontFamily="@font/simplifica"
       android:text="@string/strAccountOn"
-      android:textColor="#DADADA"
+      android:textColor="?attr/tColor"
       android:textSize="20sp"
       android:textStyle="bold"
       app:layout_constraintBottom_toBottomOf="parent"

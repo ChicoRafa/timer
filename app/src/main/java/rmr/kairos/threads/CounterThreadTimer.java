@@ -1,11 +1,12 @@
 package rmr.kairos.threads;
 
+
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 
-import androidx.annotation.RequiresApi;
-
-import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -43,91 +44,103 @@ public class CounterThreadTimer {
     private TimerTask timerTask;
     private LifeCycleThread lifeCycleThread;
     private SharedPreferences kp;
+    private Context context;
     //private int workTime;
     //private String day = LocalDate.now().getDayOfWeek().toString();
 
-    public CounterThreadTimer(SharedPreferences kp,LifeCycleThread lifeCycleThread) {
+    public CounterThreadTimer(SharedPreferences kp, LifeCycleThread lifeCycleThread, Context context) {
         this.kp = kp;
         this.initializeProperties();
         this.lifeCycleThread = lifeCycleThread;
-        if(lifeCycleThread.getLifeCycleState()==LifeCycleThread.CYCLING)
+        if (lifeCycleThread.getLifeCycleState() == LifeCycleThread.CYCLING)
             this.timerState = TIMER_CYCLING;
         else
             this.timerState = TIMER_STARTED;
         this.timeLeftMilis = new KairosLong(0);
         this.timer = new Timer("CounterThreadTimer");
+        this.context = context;
     }
-    private void initializeProperties(){
-        this.startTimeMillis = this.kp.getInt("work_bar_key", 25)*60000;
-        this.breakTimeMilis = this.kp.getInt("break_bar_key",5)*60000;
-        this.longBreakTimeMilis = this.kp.getInt("sleep_bar_key",15)*60000;
+
+    private void initializeProperties() {
+        this.startTimeMillis = this.kp.getInt("work_bar_key", 25) * 60000;
+        this.breakTimeMilis = this.kp.getInt("break_bar_key", 5) * 60000;
+        this.longBreakTimeMilis = this.kp.getInt("sleep_bar_key", 15) * 60000;
     }
 
     private void startTimerTask() {
-            this.timerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    if (timerState == TIMER_PAUSED) {
-                        try {
-                            synchronized (timer) {
-                                timer.wait();
-                                //se incrementa 1 segundo el temporizador debido
-                                //al tiempo para salir de la espera
-                                timeLeftMilis.setValue(timeLeftMilis.getValue()+1000);
-                            }
-                            timerState = TIMER_RUNNING;
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+        this.timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if (timerState == TIMER_PAUSED) {
+                    try {
+                        synchronized (timer) {
+                            timer.wait();
+                            //se incrementa 1 segundo el temporizador debido
+                            //al tiempo para salir de la espera
+                            timeLeftMilis.setValue(timeLeftMilis.getValue() + 1000);
                         }
+                        timerState = TIMER_RUNNING;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    if (timerState == TIMER_STOPPED) {
-                        this.cancel();
-                        timer.cancel();
-                        return;
-                    }
-                    updateTimerText(timeLeftMilis);
-                    timeLeftMilis.setValue(timeLeftMilis.getValue() - 1000);
-                    if (timeLeftMilis.getValue() < 0)
-                        this.cancel();
+                }
+                if (timerState == TIMER_STOPPED) {
+                    this.cancel();
+                    timer.cancel();
+                    return;
+                }
+                updateTimerText(timeLeftMilis);
+                timeLeftMilis.setValue(timeLeftMilis.getValue() - 1000);
+                if (timeLeftMilis.getValue() < 0)
+                    this.cancel();
+            }
+
+            @Override
+            public boolean cancel() {
+                switch (lifeCycleThread.getLifeCycleState()) {
+                    case LifeCycleThread.WORKING:
+                        lifeCycleThread.setLifeCycleSession(lifeCycleThread.getLifeCycleSession() + 1);
+                        lifeCycleThread.updateSessionText(1);
+                        lifeCycleThread.updateStateText(lifeCycleThread.getWorkingStateText());
+                        if (lifeCycleThread.getLifeCycleSession() < 4) {
+                            timeLeftMilis.setValue(breakTimeMilis);
+                            lifeCycleThread.updateStateText(lifeCycleThread.getBreakingStateText());
+                            lifeCycleThread.setLifeCycleState(LifeCycleThread.BREAKING);
+                        } else {
+                            lifeCycleThread.setLifeCycleSession(0);
+                            timeLeftMilis.setValue(longBreakTimeMilis);
+                            lifeCycleThread.updateStateText(lifeCycleThread.getSleepingStateText());
+                            lifeCycleThread.setLifeCycleState(LifeCycleThread.SLEEPING);
+                        }
+                        break;
+                    case LifeCycleThread.CYCLING:
+                    case LifeCycleThread.BREAKING:
+                    case LifeCycleThread.SLEEPING:
+                        timeLeftMilis.setValue(startTimeMillis);
+                        lifeCycleThread.updateStateText(lifeCycleThread.getWorkingStateText());
+                        lifeCycleThread.setLifeCycleState(LifeCycleThread.WORKING);
+                        break;
                 }
 
-                @Override
-                public boolean cancel() {
-                    switch (lifeCycleThread.getLifeCycleState()) {
-                        case LifeCycleThread.WORKING:
-                            lifeCycleThread.setLifeCycleSession(lifeCycleThread.getLifeCycleSession() + 1);
-                            lifeCycleThread.updateSessionText(1);
-                            lifeCycleThread.updateStateText(lifeCycleThread.getWorkingStateText());
-                            if (lifeCycleThread.getLifeCycleSession() < 4) {
-                                timeLeftMilis.setValue(breakTimeMilis);
-                                lifeCycleThread.updateStateText(lifeCycleThread.getBreakingStateText());
-                                lifeCycleThread.setLifeCycleState(LifeCycleThread.BREAKING);
-                            } else {
-                                lifeCycleThread.setLifeCycleSession(0);
-                                timeLeftMilis.setValue(longBreakTimeMilis);
-                                lifeCycleThread.updateStateText(lifeCycleThread.getSleepingStateText());
-                                lifeCycleThread.setLifeCycleState(LifeCycleThread.SLEEPING);
-                            }
-                            break;
-                        case LifeCycleThread.CYCLING:
-                        case LifeCycleThread.BREAKING:
-                        case LifeCycleThread.SLEEPING:
-                            timeLeftMilis.setValue(startTimeMillis);
-                            lifeCycleThread.updateStateText(lifeCycleThread.getWorkingStateText());
-                            lifeCycleThread.setLifeCycleState(LifeCycleThread.WORKING);
-                            break;
+                timerState = TIMER_FINISHED;
+                if (kp.getBoolean("vibrate_key",true)) {
+                    Vibrator v = (Vibrator) context.getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        //deprecated in API 26
+                        v.vibrate(500);
                     }
-
-                    timerState = TIMER_FINISHED;
-                    timer.purge();
-                    return true;
                 }
+                timer.purge();
+                return true;
+            }
 
-                @Override
-                public long scheduledExecutionTime() {
-                    return super.scheduledExecutionTime();
-                }
-            };
+            @Override
+            public long scheduledExecutionTime() {
+                return super.scheduledExecutionTime();
+            }
+        };
     }
 
     public int getTimerState() {
@@ -177,9 +190,10 @@ public class CounterThreadTimer {
         this.timer.cancel();
     }
 
-    public boolean isCycling(){
-        return this.timerState==CounterThreadTimer.TIMER_CYCLING;
+    public boolean isCycling() {
+        return this.timerState == CounterThreadTimer.TIMER_CYCLING;
     }
+
     public boolean hasFinished() {
         return this.timerState == CounterThreadTimer.TIMER_FINISHED;
     }
@@ -196,7 +210,9 @@ public class CounterThreadTimer {
         return this.timerState == CounterThreadTimer.TIMER_STOPPED;
     }
 
-    public long getStartTimeMillis(){return this.startTimeMillis;}
+    public long getStartTimeMillis() {
+        return this.startTimeMillis;
+    }
 
     public long getBreakTimeMilis() {
         return breakTimeMilis;

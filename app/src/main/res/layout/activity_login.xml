@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="?attr/bgColor"
     tools:context=".activities.LoginActivity">
 
     <ImageView
         android:id="@+id/imBack"
         android:layout_width="42dp"
         android:layout_height="42dp"
+        android:tint="?attr/imColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.043"
@@ -35,7 +36,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/simplifica"
         android:text="@string/strLogin"
-        android:textColor="#FFFFFF"
+        android:textColor="?attr/tColor"
         android:textSize="55sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/tilUsername"
@@ -65,7 +66,7 @@
             android:fontFamily="@font/simplifica"
             android:hint="@string/username"
             android:shadowColor="#FFFFFF"
-            android:textColor="#FFFFFF"
+            android:textColor="?attr/bgColor"
             android:textSize="24sp"
             android:textStyle="bold" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -91,6 +92,7 @@
             android:fontFamily="@font/simplifica"
             android:hint="@string/password"
             android:inputType="textPassword"
+            android:textColor="?attr/bgColor"
             android:textSize="24sp"
             android:textStyle="bold" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -113,7 +115,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tilPass"
         app:layout_constraintVertical_bias="0.149"
-        app:strokeColor="#FFFFFF" />
+        app:strokeColor="?attr/imColor" />
 
     <TextView
         android:id="@+id/tvToRegister"
@@ -121,7 +123,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/simplifica"
         android:text="@string/strAccountOFF"
-        android:textColor="#FFFFFF"
+        android:textColor="?attr/imColor"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

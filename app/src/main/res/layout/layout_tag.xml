@@ -4,7 +4,7 @@
     android:id="@+id/lyTag"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="?attr/bgColor"
     android:orientation="vertical">
 
     <LinearLayout
@@ -20,7 +20,7 @@
             android:layout_gravity="center|center_horizontal"
             android:fontFamily="@font/simplifica"
             android:text="TextView"
-            android:textColor="#FFFFFF"
+            android:textColor="?attr/tColor"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -31,7 +31,7 @@
             android:layout_gravity="center"
             android:fontFamily="@font/simplifica"
             android:text="TextView"
-            android:textColor="#FFFFFF"
+            android:textColor="?attr/tColor"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -48,11 +48,11 @@
             android:paddingRight="0dp"
             android:src="@drawable/ic_baseline_edit_24"
             android:textAlignment="center"
-            android:textColor="#FFFFFF"
+            android:textColor="?attr/tColor"
             android:textColorHint="#FF5252"
             android:textSize="34sp"
             android:textStyle="bold"
-            app:strokeColor="#FFFFFF" />
+            app:strokeColor="?attr/tColor" />
 
     </LinearLayout>
 </LinearLayout>

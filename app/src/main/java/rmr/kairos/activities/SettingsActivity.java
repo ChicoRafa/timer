@@ -1,14 +1,20 @@
 package rmr.kairos.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 import androidx.preference.SeekBarPreference;
 
 import rmr.kairos.R;
@@ -17,6 +23,7 @@ public class SettingsActivity extends AppCompatActivity {
     private final int RQ_MAIN = 10;
     private final String IK_MAIN = "main_key";
     private Intent intentFromMain;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +40,6 @@ public class SettingsActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         this.intentFromMain = getIntent();
-
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
@@ -53,6 +59,41 @@ public class SettingsActivity extends AppCompatActivity {
             SeekBarPreference sbWork = findPreference("work_bar_key");
             SeekBarPreference sbBreak = findPreference("break_bar_key");
             SeekBarPreference sbSleep = findPreference("sleep_bar_key");
+            CheckBoxPreference cbDark = findPreference("dark_mode_key");
+            CheckBoxPreference cbVibrate = findPreference("vibrate_key");
+            CheckBoxPreference cbScreen = findPreference("onScreen_key");
+
+            if (cbDark != null){
+                cbDark.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
+                        Toast.makeText(getActivity(), "Tema cambiado", Toast.LENGTH_SHORT).show();
+                        if (newValue.toString().equals("true")){
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                        }else{
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                        }
+                        return true;
+                    }
+                });
+            }
+            if (cbVibrate != null){
+                cbVibrate.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
+                        return true;
+                    }
+                });
+            }
+            if (cbScreen != null){
+                cbScreen.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
+                        return true;
+                    }
+                });
+            }
+
             if (sbWork != null) {
                 sbWork.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override

@@ -1,8 +1,10 @@
 package rmr.kairos.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,6 +32,7 @@ import java.util.List;
 import rmr.kairos.R;
 import rmr.kairos.database.KairosDB;
 import rmr.kairos.model.Estadistica;
+import rmr.kairos.util.KairosPreference;
 
 /**
  * Actividad que muestra las estadísticas de uso de la app
@@ -41,6 +44,7 @@ public class StatActivity extends AppCompatActivity {
     private ImageView imBack;
     private KairosDB db;
     private Date creationDate;
+    private SharedPreferences kp;
 
 
     @Override
@@ -50,6 +54,7 @@ public class StatActivity extends AppCompatActivity {
         imBack = findViewById(R.id.imBack);
         db = new KairosDB(StatActivity.this);
         creationDate = null;
+        kp = PreferenceManager.getDefaultSharedPreferences(this);
         imBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,7 +66,7 @@ public class StatActivity extends AppCompatActivity {
         if (creationDate != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                long nowDate = Date.from(Instant.now()).getTime() - creationDate.getTime();
-               //if (nowDate>1) db.
+               if (nowDate>1) db.updateAllStats();
             }
         }
         AnyChartView anyChartView = findViewById(R.id.any_chart_view);
@@ -106,7 +111,9 @@ public class StatActivity extends AppCompatActivity {
 
         cartesian.xAxis(0).title("Día");
         //cartesian.yAxis(0).title("Tiempo");
-        cartesian.background().fill("#000000");
+        if(kp.getBoolean("dark_mode_key",true)) {
+            cartesian.background().fill("#000000");
+        }else cartesian.background().fill("#FFFFFF");
 
 
         anyChartView.setChart(cartesian);

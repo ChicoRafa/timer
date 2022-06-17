@@ -49,4 +49,8 @@
     <string name="strDeleteTagF">Error al Eliminar</string>
     <string name="strDeleteTagT">Etiqueta Eliminada</string>
     <string name="strStatNotLogged">Debe iniciar sesión para usar esta funcionalidad</string>
+    <string name="strEnterTagName">Introduzca el nombre de una etiqueta</string>
+    <string name="strDarkMode">Modo oscuro</string>
+    <string name="strActiveVibration">Vibración activa</string>
+    <string name="strScreen">Pantalla siempre activa</string>
 </resources>

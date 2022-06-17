@@ -40,6 +40,27 @@
 
 
     </PreferenceCategory>
+    <PreferenceCategory android:title="Tema">
+
+        <CheckBoxPreference
+            android:id="@+id/cbDark"
+            android:defaultValue="true"
+            android:key="dark_mode_key"
+            android:title="@string/strDarkMode" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Preferencias generales">
+
+        <CheckBoxPreference
+            android:id="@+id/cbVibrate"
+            android:defaultValue="true"
+            android:key="vibrate_key"
+            android:title="@string/strActiveVibration" />
+        <CheckBoxPreference
+            android:id="@+id/cbScreen"
+            android:defaultValue="false"
+            android:key="onScreen_key"
+            android:title="@string/strScreen" />
+    </PreferenceCategory>
 
 
 </PreferenceScreen>

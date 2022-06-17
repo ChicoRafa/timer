@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="?attr/bgColor"
     android:descendantFocusability="blocksDescendants"
     tools:context=".activities.TagActivity">
 
@@ -12,16 +12,17 @@
         android:id="@+id/imBack"
         android:layout_width="42dp"
         android:layout_height="42dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:tint="?attr/imColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.043"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.021"
-        app:srcCompat="@drawable/ic_back"
-        android:clickable="false"
-        android:focusable="false"
-        android:focusableInTouchMode="false"/>
+        app:srcCompat="@drawable/ic_back" />
 
     <TextView
         android:id="@+id/tvTag"
@@ -29,7 +30,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/simplifica"
         android:text="@string/strEtiquetas"
-        android:textColor="#FFFFFF"
+        android:textColor="?attr/tColor"
         android:textSize="46sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -37,23 +38,23 @@
         app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintStart_toEndOf="@+id/imBack"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023"
-        />
+        app:layout_constraintVertical_bias="0.023" />
 
     <ImageView
         android:id="@+id/imNewTag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:tint="?attr/imColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.916"
         app:layout_constraintStart_toEndOf="@+id/tvTag"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.028"
-        app:srcCompat="@drawable/ic_baseline_library_add_24"
-        android:clickable="false"
-        android:focusable="false"
-        android:focusableInTouchMode="false"/>
+        app:srcCompat="@drawable/ic_baseline_library_add_24" />
 
     <LinearLayout
         android:id="@+id/linearLayout"

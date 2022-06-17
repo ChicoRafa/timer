@@ -41,7 +41,7 @@ public class LifeCycleThread implements Runnable {
         this.lifeCycleState = state;
         this.updateStateText(this.mainActivity.getResources().getString(R.string.trabajando));
         this.timeLeftMilis = new KairosLong(0);
-        this.ctTimer = new CounterThreadTimer(kp,this);
+        this.ctTimer = new CounterThreadTimer(kp,this, mainActivity.getApplicationContext());
     }
     @Override
     public void run() {

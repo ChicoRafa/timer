@@ -8,6 +8,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.FragmentManager;
@@ -16,39 +18,31 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.slider.Slider;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import rmr.kairos.R;
 import rmr.kairos.adapters.TagMainAdapter;
-import rmr.kairos.controllers.OnSwipeTouchListener;
 import rmr.kairos.database.KairosDB;
 import rmr.kairos.database.KairosHelper;
-import rmr.kairos.dialogs.TagDialog;
 import rmr.kairos.fragments.PreferenceFragment;
 import rmr.kairos.interfaces.LayoutUpdatable;
 import rmr.kairos.model.Tag;
@@ -59,7 +53,10 @@ import rmr.kairos.threads.LifeCycleThread;
  * Actividad principal
  */
 public class MainActivity extends AppCompatActivity implements LayoutUpdatable, PreferenceFragment.BottomSheetListener {
+    private View lyMain;
     private int lifeCycleSession = 0;
+    private int tiempoRestante = 0;
+    private int workTime = 0;
     private TextView tvTimer;
     private TextView tvSession;
     private TextView tvState;
@@ -71,19 +68,17 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
     private Thread lifeCycleThread;
     public static final String CHANNEL_ID = "Kairós";
     public static final String SERVICE_EXTRA = "timerExtra";
+    private final int RQ_MAIN = 10;
+    private final String IK_MAIN = "main_key";
     private Intent serviceIntent;
     private boolean isFirst = true;
     private SharedPreferences kp;
-    private final int RQ_MAIN = 10;
-    private final String IK_MAIN = "main_key";
     private ActivityResultLauncher<Intent> launcher;
     private final ActivityResultRegistry mRegistry;
     private KairosHelper dbHelper = new KairosHelper(MainActivity.this);
     private SQLiteDatabase dbKairos;
     private KairosDB db = new KairosDB(MainActivity.this);
-    private RecyclerView rvTagMain;
-    private int tiempoRestante = 0;
-    private int workTime = 0;
+
     private boolean logueado = false;
 
     public MainActivity() {
@@ -101,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         };
     }
 
+    @SuppressLint("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,13 +107,16 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         this.imPreferences = findViewById(R.id.imPreferences);
         this.imTag = findViewById(R.id.imTag);
         this.tvTagMain = findViewById(R.id.tvTagMain);
-        this.rvTagMain = new RecyclerView(this);
-        try{
+        this.lyMain = findViewById(R.id.lyMain);
+        try {
             this.logueado = getIntent().getExtras().getBoolean("Logueado");
-        }catch (NullPointerException np){
+        } catch (NullPointerException np) {
             np.toString();
         }
         this.kp = PreferenceManager.getDefaultSharedPreferences(this);
+        if (kp.getBoolean("onScreen_key",true)){
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }else getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         this.tvTimer.setText(String.valueOf(kp.getInt("work_value_key", 25)) + ":00");
         dbKairos = dbHelper.getWritableDatabase();
         //createNotificationChannel();
@@ -290,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
                     Intent intentToStat = new Intent(getApplicationContext(), StatActivity.class);
                     intentToStat.putExtra(IK_MAIN, RQ_MAIN);
                     launcher.launch(intentToStat);
-                }else Toast.makeText(this, R.string.strStatNotLogged , Toast.LENGTH_SHORT).show();
+                } else Toast.makeText(this, R.string.strStatNotLogged, Toast.LENGTH_SHORT).show();
                 break;
             case 3:
                 Intent intentToTag = new Intent(getApplicationContext(), TagActivity.class);
@@ -308,49 +307,73 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
     public void tagDialog() {
         AlertDialog.Builder tagBuilder = new AlertDialog.Builder(MainActivity.this);
         View tagView = getLayoutInflater().inflate(R.layout.dialog_tag_main, null);
+        EditText etTag = tagView.findViewById(R.id.etTagNameMain);
+        String[] colorsCode = getResources().getStringArray(R.array.tagSpinnerArray);
+        String[] colorsName = getResources().getStringArray(R.array.tagSpinnerColor);
+        LinkedHashMap<String, String> mapaColores = new LinkedHashMap<String, String>();
+        for (int i = 0; i < colorsName.length; i++) {
+            mapaColores.put(colorsName[i], colorsCode[i]);
+        }
+        tagBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
 
+                if (!etTag.getText().toString().isEmpty()) {
+                    for (int j = 0; j < db.selectTags().size(); j++) {
+                        if (etTag.getText().toString().equalsIgnoreCase(db.selectTags().get(j).getTagName())) {
+                            tvTagMain.setTextColor(Color.parseColor(mapaColores.get(db.selectTags().get(j).getTagColor())));
+                            tvTagMain.setText(db.selectTags().get(j).getTagName());
+                            tvTagMain.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }else {
+                    tvTagMain.setText("");
+                    tvTagMain.setVisibility(View.INVISIBLE);
+                }
+
+            }
+        });
 
         tagBuilder.setCancelable(true);
         tagBuilder.setView(tagView);
         AlertDialog dialog = tagBuilder.create();
         dialog.show();
-        this.rvTagMain = findViewById(R.id.rvTagDialog);
-        this.rvTagMain.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        TagMainAdapter tagMainAdapter = new TagMainAdapter(db.selectTags(), new TagMainAdapter.ItemClickListener() {
-            @Override
-            public void onItemClick(Tag tag) {
-                String[] colorsCode = getResources().getStringArray(R.array.tagSpinnerArray);
-                String[] colorsName = getResources().getStringArray(R.array.tagSpinnerColor);
-                LinkedHashMap<String, String> mapaColores = new LinkedHashMap<String, String>();
-                for (int i = 0; i < colorsName.length; i++) {
-                    mapaColores.put(colorsName[i], colorsCode[i]);
-                }
-                tvTagMain.setTextColor(Color.parseColor(mapaColores.get(tag.getTagColor())));
-                tvTagMain.setText(tag.getTagName());
-                tvTagMain.setVisibility(View.VISIBLE);
-            }
-        });
-        rvTagMain.setAdapter(tagMainAdapter);
 
 
     }
-    private String getDia(){
+
+    private String getDia() {
         String day = "";
         String dia = "";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             day = LocalDate.now().getDayOfWeek().toString();
         }
-        switch (day){
-            case "MONDAY": dia = "lunes"; break;
-            case "TUESDAY": dia = "martes"; break;
-            case "WEDNESDAY": dia = "miercoles"; break;
-            case "THURSDAY": dia = "jueves"; break;
-            case "FRIDAY": dia = "viernes"; break;
-            case "SATURDAY": dia = "sabado"; break;
-            case "SUNDAY": dia = "domingo"; break;
+        switch (day) {
+            case "MONDAY":
+                dia = "lunes";
+                break;
+            case "TUESDAY":
+                dia = "martes";
+                break;
+            case "WEDNESDAY":
+                dia = "miercoles";
+                break;
+            case "THURSDAY":
+                dia = "jueves";
+                break;
+            case "FRIDAY":
+                dia = "viernes";
+                break;
+            case "SATURDAY":
+                dia = "sabado";
+                break;
+            case "SUNDAY":
+                dia = "domingo";
+                break;
         }
         return dia;
     }
+
     private void setUpLauncher() {
         this.launcher = this.mRegistry.register(IK_MAIN,
                 new ActivityResultContracts.StartActivityForResult(),

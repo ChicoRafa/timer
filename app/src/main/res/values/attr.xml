@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="light">
+        <attr name="bgColor" format="color"/>
+        <attr name="tColor" format="color"/>
+        <attr name="imColor" format="color"/>
+    </declare-styleable>
+</resources>
