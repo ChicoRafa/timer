@@ -21,11 +21,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -142,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         this.tvTimer.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                //createNotificationChannel();
                 //no es posible iniciar un nuevo ciclo sin salir de la pausa anterior,
                 //esto si quiere lo puedes quitar
                 if (!timerThread.timerHasPaused()) return true;
@@ -380,4 +384,47 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
                 null);
 
     }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID, "Kairós channel", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(serviceChannel);
+        }
+    }
+
+    public void startService() {
+        String serviceString = "Tiempo restante: " + tvTimer.getText().toString();
+        //Intent serviceIntent = new Intent(this, TimerService.class);
+        serviceIntent.putExtra(SERVICE_EXTRA, serviceString);
+        startService(serviceIntent);
+    }
+
+    public void stopService() {
+        //Intent serviceIntent = new Intent(this, TimerService.class);
+        stopService(serviceIntent);
+    }
+
+
+    /*@Override
+    protected void onStop() {
+        super.onStop();
+        startService();
+        this.isFirst = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (this.serviceIntent != null)
+            stopService();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (this.serviceIntent != null)
+            stopService();
+    }*/
 }

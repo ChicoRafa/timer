@@ -77,6 +77,7 @@ public class LifeCycleThread implements Runnable {
         switch (this.lifeCycleState) {
             case LifeCycleThread.WORKING:
                 this.timeLeftMilis.setValue(ctTimer.getStartTimeMillis());
+                //mainActivity.createNotificationChannel();
                 break;
             case LifeCycleThread.BREAKING:
                 this.timeLeftMilis.setValue(ctTimer.getBreakTimeMilis());
