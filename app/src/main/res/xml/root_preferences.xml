@@ -13,6 +13,8 @@
             android:min="@integer/work_bar_min"
             android:stepSize="1"
             android:summary="@string/strWorkTime"
+            app:min="10"
+            app:showSeekBarValue="true"
             app:trackColorActive="@color/kairos_red"
             app:trackColorInactive="@color/white" />
 
@@ -24,6 +26,8 @@
             android:min="@integer/break_bar_min"
             android:stepSize="1"
             android:summary="@string/strBreakTime"
+            app:min="5"
+            app:showSeekBarValue="true"
             app:trackColorActive="@color/kairos_red"
             app:trackColorInactive="@color/white" />
 
@@ -35,6 +39,8 @@
             android:min="@integer/sleep_bar_min"
             android:stepSize="1"
             android:summary="@string/strSleepTime"
+            app:min="10"
+            app:showSeekBarValue="true"
             app:trackColorActive="@color/kairos_red"
             app:trackColorInactive="@color/white" />
 

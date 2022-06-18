@@ -49,6 +49,7 @@ import rmr.kairos.database.KairosHelper;
 import rmr.kairos.fragments.PreferenceFragment;
 import rmr.kairos.interfaces.LayoutUpdatable;
 import rmr.kairos.model.Tag;
+import rmr.kairos.services.TimerService;
 import rmr.kairos.threads.CounterThreadTimer;
 import rmr.kairos.threads.LifeCycleThread;
 
@@ -120,6 +121,9 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         if (kp.getBoolean("onScreen_key",true)){
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }else getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if (kp.getBoolean("dark_mode_key",true)){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
         this.tvTimer.setText(String.valueOf(kp.getInt("work_value_key", 25)) + ":00");
         dbKairos = dbHelper.getWritableDatabase();
         //createNotificationChannel();
@@ -233,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
     @Override
     public void updateTimerText(String text) {
         this.tvTimer.setText(text);
+        startService();
     }
 
     @Override
@@ -385,33 +390,29 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
 
     }
 
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel serviceChannel = new NotificationChannel(
-                    CHANNEL_ID, "Kairós channel", NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(serviceChannel);
-        }
-    }
-
     public void startService() {
         String serviceString = "Tiempo restante: " + tvTimer.getText().toString();
-        //Intent serviceIntent = new Intent(this, TimerService.class);
+        this.serviceIntent = new Intent(this, TimerService.class);
         serviceIntent.putExtra(SERVICE_EXTRA, serviceString);
         startService(serviceIntent);
     }
 
     public void stopService() {
-        //Intent serviceIntent = new Intent(this, TimerService.class);
-        stopService(serviceIntent);
+        stopService(this.serviceIntent);
     }
 
-
-    /*@Override
+    @Override
     protected void onStop() {
         super.onStop();
-        startService();
-        this.isFirst = false;
+        if (timerThread!=null) {
+            try {
+                startService();
+                this.isFirst = false;
+            }catch (NullPointerException e){
+                e.toString();
+            }
+
+        }
     }
 
     @Override
@@ -426,5 +427,5 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         super.onResume();
         if (this.serviceIntent != null)
             stopService();
-    }*/
+    }
 }

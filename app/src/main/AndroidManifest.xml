@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="rmr.kairos">
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -43,6 +45,7 @@
             android:name=".activities.TagActivity"
             android:exported="true"
             android:theme="@style/Theme.LoginProject" />
+        <service android:name=".services.TimerService"/>
     </application>
 
 </manifest>

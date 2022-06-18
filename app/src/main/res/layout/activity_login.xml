@@ -66,7 +66,7 @@
             android:fontFamily="@font/simplifica"
             android:hint="@string/username"
             android:shadowColor="#FFFFFF"
-            android:textColor="?attr/bgColor"
+            android:textColor="?attr/tColor"
             android:textSize="24sp"
             android:textStyle="bold" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -92,7 +92,7 @@
             android:fontFamily="@font/simplifica"
             android:hint="@string/password"
             android:inputType="textPassword"
-            android:textColor="?attr/bgColor"
+            android:textColor="?attr/tColor"
             android:textSize="24sp"
             android:textStyle="bold" />
     </com.google.android.material.textfield.TextInputLayout>

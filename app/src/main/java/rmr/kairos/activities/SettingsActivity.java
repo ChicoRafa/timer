@@ -103,7 +103,7 @@ public class SettingsActivity extends AppCompatActivity {
                             try {
                                 workValueInt = (Integer) newValue;
                                 setWorkValue(workValueInt);
-                                // Do something with the value
+
                             } catch (NumberFormatException nfe) {
                                 Toast.makeText(getActivity(),
                                         "SeekBarPreference is a Integer, but it caused a NumberFormatException",

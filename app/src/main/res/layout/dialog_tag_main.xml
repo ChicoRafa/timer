@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#737070"
-    android:orientation="vertical" >
+    android:background="?attr/bgColor"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/tvTitle"
@@ -14,6 +14,7 @@
         android:fontFamily="@font/simplifica"
         android:text="@string/strEnterTagName"
         android:textAlignment="center"
+        android:textColorHint="#3C3C3C"
         android:textSize="24sp"
         android:textStyle="bold" />
 
