@@ -9,29 +9,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -43,18 +37,20 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 
 import rmr.kairos.R;
-import rmr.kairos.adapters.TagMainAdapter;
 import rmr.kairos.database.KairosDB;
 import rmr.kairos.database.KairosHelper;
 import rmr.kairos.fragments.PreferenceFragment;
 import rmr.kairos.interfaces.LayoutUpdatable;
-import rmr.kairos.model.Tag;
 import rmr.kairos.services.TimerService;
 import rmr.kairos.threads.CounterThreadTimer;
 import rmr.kairos.threads.LifeCycleThread;
 
 /**
- * Actividad principal
+ * Actividad principal de Kairós, crea los contadores usando hilos y permite la navegabilidad por toda
+ * la app; es el centro neurálgico de la aplicación
+ * @author Rafa M.
+ * @version 1.0
+ * @since 1.0
  */
 public class MainActivity extends AppCompatActivity implements LayoutUpdatable, PreferenceFragment.BottomSheetListener {
     private View lyMain;
@@ -82,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
     private KairosHelper dbHelper = new KairosHelper(MainActivity.this);
     private SQLiteDatabase dbKairos;
     private KairosDB db = new KairosDB(MainActivity.this);
-
     private boolean logueado = false;
 
     public MainActivity() {
@@ -105,6 +100,15 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.kp = PreferenceManager.getDefaultSharedPreferences(this);
+        if (kp.getBoolean("onScreen_key",true)){
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }else{
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+        if (kp.getBoolean("dark_mode_key",true)){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
         this.tvTimer = findViewById(R.id.tvTimer);
         this.tvState = findViewById(R.id.tvState);
         this.tvSession = findViewById(R.id.tvSession);
@@ -117,17 +121,9 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         } catch (NullPointerException np) {
             np.toString();
         }
-        this.kp = PreferenceManager.getDefaultSharedPreferences(this);
-        if (kp.getBoolean("onScreen_key",true)){
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        }else getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        if (kp.getBoolean("dark_mode_key",true)){
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }
-        this.tvTimer.setText(String.valueOf(kp.getInt("work_value_key", 25)) + ":00");
+        //this.tvTimer.setText(String.valueOf(kp.getInt("work_value_key", 25)) + ":00");
+        //inicia la BDD
         dbKairos = dbHelper.getWritableDatabase();
-        //createNotificationChannel();
-        //this.tvToLogin = findViewById(R.id.opLogin);
         this.tvTimer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -152,13 +148,15 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
                 //createNotificationChannel();
                 //no es posible iniciar un nuevo ciclo sin salir de la pausa anterior,
                 //esto si quiere lo puedes quitar
-                if (!timerThread.timerHasPaused()) return true;
+                if (!timerThread.timerHasPaused() && timerThread!=null) return true;
                 //se finaliza el hilo anterior que se encargará de detener al temporizador
                 timerThread.endTimer();
                 if (logueado) {
                     tiempoRestante = Integer.valueOf(tvTimer.getText().toString().substring(0, 2));
                     workTime = kp.getInt("work_bar_key", 25) - tiempoRestante;
+                    if (workTime != 0)
                     db.updateStat(getDia(), workTime);
+                    else db.updateStat(getDia(), kp.getInt("work_bar_key", 25));
                 }
                 //stopService();
                 Toast.makeText(MainActivity.this, "Se ha detenido el ciclo, en " +
@@ -218,10 +216,7 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         this.imTag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //AlertDialog dg = null;
                 tagDialog();
-                //dg.setContentView();
-
             }
         });
         this.setUpLauncher();
@@ -285,6 +280,12 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
             });
         }
     }*/
+
+    /**
+     * Método que permite la selección de opciones en el fragmento de preferencias (BottomSheetFragment)
+     * @param op ==> opción seleccionada
+     * @since 1.0
+     */
     @Override
     public void onBottomSheetClicked(int op) {
         switch (op) {
@@ -313,6 +314,10 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         }
     }
 
+    /**
+     * Método que crea el diálogo de selección de etiqueta
+     * @since 1.0
+     */
     public void tagDialog() {
         AlertDialog.Builder tagBuilder = new AlertDialog.Builder(MainActivity.this);
         View tagView = getLayoutInflater().inflate(R.layout.dialog_tag_main, null);
@@ -351,6 +356,12 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
 
     }
 
+    /**
+     * Método que obtiene el día actual para usarlo en la BDD a la hora de añadir información
+     * a las estadísticas
+     * @return ==> día de la semana
+     * @since 1.0
+     */
     private String getDia() {
         String day = "";
         String dia = "";
@@ -383,6 +394,10 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
         return dia;
     }
 
+    /**
+     * Método usado para la navegabilidad
+     * since 1.0
+     */
     private void setUpLauncher() {
         this.launcher = this.mRegistry.register(IK_MAIN,
                 new ActivityResultContracts.StartActivityForResult(),
@@ -390,6 +405,10 @@ public class MainActivity extends AppCompatActivity implements LayoutUpdatable, 
 
     }
 
+    /**
+     * Método que inicia el servicio de notificaciones
+     * @since 1.0
+     */
     public void startService() {
         String serviceString = "Tiempo restante: " + tvTimer.getText().toString();
         this.serviceIntent = new Intent(this, TimerService.class);

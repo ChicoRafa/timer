@@ -5,7 +5,6 @@ import androidx.preference.PreferenceManager;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -16,7 +15,6 @@ import com.anychart.AnyChartView;
 import com.anychart.chart.common.dataentry.DataEntry;
 import com.anychart.chart.common.dataentry.ValueDataEntry;
 import com.anychart.charts.Cartesian;
-import com.anychart.charts.Pie;
 import com.anychart.core.cartesian.series.Column;
 import com.anychart.enums.Anchor;
 import com.anychart.enums.HoverMode;
@@ -24,7 +22,6 @@ import com.anychart.enums.Position;
 import com.anychart.enums.TooltipPositionMode;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,13 +29,12 @@ import java.util.List;
 import rmr.kairos.R;
 import rmr.kairos.database.KairosDB;
 import rmr.kairos.model.Estadistica;
-import rmr.kairos.util.KairosPreference;
 
 /**
- * Actividad que muestra las estadísticas de uso de la app
- *
+ * Actividad que muestra las estadísticas de uso de la app mediante la API de AnyChart
  * @author Rafa M.
  * @version 1.0
+ * @since 1.0
  */
 public class StatActivity extends AppCompatActivity {
     private ImageView imBack;

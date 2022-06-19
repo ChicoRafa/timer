@@ -1,5 +1,11 @@
 package rmr.kairos.model;
 
+/**
+ * Clase modelo con las catacterísticas de una estadística
+ * @author Rafa M.
+ * @version 1.0
+ * @since 1.0
+ */
 public class Estadistica {
     private String dia;
     private int workTime;

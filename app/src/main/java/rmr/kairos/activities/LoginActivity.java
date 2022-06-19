@@ -33,9 +33,10 @@ import rmr.kairos.model.Usuario;
 
 /**
  * Clase que permite realizar el inicio de sesión en la aplicación
- * Conecta con la base de datos MySQL para cotejar los datos introducidos y da acceso
+ * Conecta con la base de datos SQLite para cotejar los datos introducidos y da acceso
  * @author Rafa M.
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  */
 public class LoginActivity extends AppCompatActivity {
     private TextInputEditText etUsername, etPass; // edit text con contraseña y usuario

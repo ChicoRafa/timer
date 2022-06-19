@@ -15,7 +15,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import rmr.kairos.R;
 import rmr.kairos.activities.LoginActivity;
 
-
+/**
+ * Fragmento que crea el menú de estilo BottomSheet en nuestra pantalla principal
+ * @author Rafa M.
+ * @version 1.0
+ * @since 1.0
+ */
 public class PreferenceFragment extends BottomSheetDialogFragment {
     private BottomSheetListener listener;
 

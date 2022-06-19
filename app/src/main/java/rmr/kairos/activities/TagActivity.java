@@ -29,9 +29,9 @@ import rmr.kairos.model.Tag;
 
 /**
  * Actividad que permite crear etiquetas para los pomodoros a realizar
- *
  * @author Rafa M.
  * @version 1.0
+ * @since 1.0
  */
 public class TagActivity extends AppCompatActivity {
     private RecyclerView lvTag;
@@ -77,6 +77,10 @@ public class TagActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Método que muestra el diálogo de las etiquetas
+     * @since 1.0
+     */
     public void showTagDialog() {
         AlertDialog.Builder tagBuilder = new AlertDialog.Builder(TagActivity.this);
         View tagView = getLayoutInflater().inflate(R.layout.dialog_tag, null);
@@ -118,6 +122,12 @@ public class TagActivity extends AppCompatActivity {
         dialog.show();
         //return list;
     }
+
+    /**
+     * Método que permite editar las etiquetas
+     * @param tagName ==> nombre de la etiqueta
+     * @since 1.0
+     */
     public void editTag(String tagName){
         AlertDialog.Builder tagBuilder = new AlertDialog.Builder(TagActivity.this);
         View tagView = getLayoutInflater().inflate(R.layout.dialog_tag, null);

@@ -16,7 +16,11 @@ import rmr.kairos.R;
 import rmr.kairos.database.KairosDB;
 
 /**
- *
+ * Clase que permite realizar el registro en la aplicación
+ * Conecta con la base de datos SQLite para introducir los datos y guardarlos
+ * @author Rafa M.
+ * @version 2.0
+ * @since 1.0
  */
 public class SignUpActivity extends AppCompatActivity {
     private TextInputEditText etUsername, etPass, etMail;

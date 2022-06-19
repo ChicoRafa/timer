@@ -19,6 +19,12 @@ import androidx.preference.SeekBarPreference;
 
 import rmr.kairos.R;
 
+/**
+ * Actividad que maneja los ajustes de la aplicación mediante el uso de las preferencias de Android
+ * @author Rafa M.
+ * @version 1.0
+ * @since 1.0
+ */
 public class SettingsActivity extends AppCompatActivity {
     private final int RQ_MAIN = 10;
     private final String IK_MAIN = "main_key";
@@ -123,7 +129,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         }
     }
-
+    //vuelta a la act principal
     @Override
     public void onBackPressed() {
         super.onBackPressed();

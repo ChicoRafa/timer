@@ -17,7 +17,12 @@ import androidx.core.app.NotificationManagerCompat;
 import rmr.kairos.R;
 import rmr.kairos.activities.MainActivity;
 
-
+/**
+ * Servicio que permite crear las notificaciones de la app
+ * @author Rafa M.
+ * @version 2.0
+ * @since 1.0
+ */
 public class TimerService extends Service {
     public static final String SERVICE_EXTRA = "timerExtra";
     private Intent intent;

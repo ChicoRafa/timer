@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
  * entre otras funcionalidades
  * @author Rafa M.
  * @version 2.0
+ * @since 1.0
  */
 public class KairosHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 2;

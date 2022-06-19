@@ -17,6 +17,8 @@ import rmr.kairos.model.Tag;
 /**
  * Clase adaptador de las etiquetas
  * @author Rafa M.
+ * @version 1.0
+ * @since 1.0
  */
 public class TagAdapter extends RecyclerView.Adapter<TagAdapter.UsuarioViewHolder> {
     private Context activity;

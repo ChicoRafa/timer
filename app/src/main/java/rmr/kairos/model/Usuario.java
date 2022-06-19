@@ -1,5 +1,11 @@
 package rmr.kairos.model;
 
+/**
+ * Clase modelo con las catacterísticas de un usuario
+ * @author Rafa M.
+ * @version 1.0
+ * @since 1.0
+ */
 public class Usuario {
     private int id;
     private String username,password,email;
